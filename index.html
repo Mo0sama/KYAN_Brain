@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KYAN Brain</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="KYAN Brain navigation">
+        <div class="brand-lockup">
+          <div class="brand-mark">K</div>
+          <div>
+            <p class="eyebrow">KYAN Brain</p>
+            <h1>Integrated Business OS</h1>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" data-section="command">Command</button>
+          <button class="nav-item" data-section="auditBrain">Audit Brain</button>
+          <button class="nav-item" data-section="client">Client Desk</button>
+          <button class="nav-item" data-section="router">Request Router</button>
+          <button class="nav-item" data-section="brand">Brand Brain</button>
+          <button class="nav-item" data-section="content">Content Engine</button>
+          <button class="nav-item" data-section="audit">Audit Builder</button>
+          <button class="nav-item" data-section="systems">Systems Builder</button>
+          <button class="nav-item" data-section="delivery">Service Delivery</button>
+          <button class="nav-item" data-section="templates">Templates</button>
+          <button class="nav-item" data-section="settings">Settings / API</button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <p>KYAN - من اللخبطة للنظام، ومن النظام للنمو.</p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section id="command" class="panel active">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Control center</p>
+              <h2>Run KYAN from one place</h2>
+            </div>
+            <button class="ghost-button" id="copyBrain">Copy Brain Prompt</button>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric-card">
+              <span>Core promise</span>
+              <strong>Organize, digitize, automate, grow</strong>
+            </article>
+            <article class="metric-card">
+              <span>Primary market</span>
+              <strong>Egyptian SMB owners</strong>
+            </article>
+            <article class="metric-card">
+              <span>First offer</span>
+              <strong>Free business audit</strong>
+            </article>
+            <article class="metric-card">
+              <span>Golden rule</span>
+              <strong>System first. Automation second.</strong>
+            </article>
+          </div>
+
+          <div class="two-column">
+            <article class="surface">
+              <h3>Today’s operating checklist</h3>
+              <div id="dailyChecklist" class="checklist"></div>
+            </article>
+            <article class="surface">
+              <h3>The KYAN Method</h3>
+              <ol class="method-list">
+                <li><b>AUDIT</b><span>نحلل - understand the current situation</span></li>
+                <li><b>ORGANIZE</b><span>ننظم - clean up the process</span></li>
+                <li><b>BUILD</b><span>نبني - create the system</span></li>
+                <li><b>AUTOMATE</b><span>نأتمت - reduce manual work</span></li>
+                <li><b>IMPROVE</b><span>نطوّر - learn and grow</span></li>
+              </ol>
+            </article>
+          </div>
+
+          <div class="surface">
+            <h3>Saved client cases</h3>
+            <div class="case-toolbar">
+              <button class="ghost-button" id="loadLastCase">Load Latest Case</button>
+              <button class="ghost-button danger" id="clearCases">Clear Saved Cases</button>
+            </div>
+            <div id="caseList" class="case-list"></div>
+          </div>
+        </section>
+
+        <section id="auditBrain" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Client path finder</p>
+              <h2>Audit Brain</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="saveAuditCase">Save Audit Case</button>
+              <button class="ghost-button" id="copyAuditBrain">Copy Audit Path</button>
+            </div>
+          </div>
+
+          <div class="client-grid">
+            <form class="surface form-stack" id="auditBrainForm">
+              <label>
+                Client / business name
+                <input id="auditClientName" value="Audit Client" />
+              </label>
+              <label>
+                Business type
+                <select id="auditBusinessType">
+                  <option>Online store</option>
+                  <option>Clinic</option>
+                  <option>Salon</option>
+                  <option>Coach / consultant</option>
+                  <option>Local service business</option>
+                  <option>Restaurant / cafe</option>
+                  <option>Real estate</option>
+                  <option>Other small business</option>
+                </select>
+              </label>
+              <label>
+                What the client wants
+                <textarea id="auditClientGoal">عايز أزود المبيعات والناس اللي بتبعت واتساب تتحول لعملاء.</textarea>
+              </label>
+              <label>
+                Current setup
+                <textarea id="auditCurrentSetup">Facebook page + WhatsApp. No CRM. No website. Content is random.</textarea>
+              </label>
+              <fieldset>
+                <legend>Audit scores: 0 good, 5 critical</legend>
+                <div id="auditScoreInputs" class="score-grid"></div>
+              </fieldset>
+              <button type="submit" class="primary-button">Determine Client Path</button>
+            </form>
+
+            <div class="stacked-output">
+              <article class="surface">
+                <h3>Audit scorecard</h3>
+                <div id="auditScoreSummary" class="score-summary"></div>
+              </article>
+              <article class="surface output-panel">
+                <h3>Recommended path</h3>
+                <pre id="auditBrainOutput"></pre>
+              </article>
+              <article class="surface output-panel">
+                <h3>Client-facing audit reply</h3>
+                <pre id="auditClientReplyOutput"></pre>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="client" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Operational brain</p>
+              <h2>Client Desk</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="saveCase">Save Case</button>
+              <button class="ghost-button" id="copyClientPlan">Copy Client Plan</button>
+            </div>
+          </div>
+
+          <div class="client-grid">
+            <form class="surface form-stack" id="clientForm">
+              <label>
+                Client / business name
+                <input id="clientName" value="New Client" />
+              </label>
+              <label>
+                Business type
+                <select id="clientType">
+                  <option>Online store</option>
+                  <option>Clinic</option>
+                  <option>Salon</option>
+                  <option>Coach / consultant</option>
+                  <option>Local service business</option>
+                  <option>Restaurant / cafe</option>
+                  <option>Real estate</option>
+                  <option>Other small business</option>
+                </select>
+              </label>
+              <label>
+                Client request
+                <textarea id="clientRequest">عندي صفحة فيسبوك والناس بتبعت واتساب بس المبيعات قليلة ومش عارف أتابع العملاء.</textarea>
+              </label>
+              <label>
+                Current assets
+                <select id="clientAssets" multiple size="5">
+                  <option selected>Facebook page</option>
+                  <option selected>WhatsApp</option>
+                  <option>Website</option>
+                  <option>Google Sheet</option>
+                  <option>Meta Business Suite</option>
+                </select>
+              </label>
+              <label>
+                Budget level
+                <select id="budgetLevel">
+                  <option>Unknown</option>
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                </select>
+              </label>
+              <label>
+                Urgency
+                <select id="urgencyLevel">
+                  <option>This week</option>
+                  <option>Today</option>
+                  <option>This month</option>
+                  <option>No deadline</option>
+                </select>
+              </label>
+              <button type="submit" class="primary-button">Diagnose Request</button>
+            </form>
+
+            <div class="stacked-output">
+              <article class="surface output-panel">
+                <h3>Diagnosis + service path</h3>
+                <pre id="clientPlanOutput"></pre>
+              </article>
+              <article class="surface output-panel">
+                <h3>Client reply</h3>
+                <pre id="clientReplyOutput"></pre>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="router" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Decision engine</p>
+              <h2>Request Router</h2>
+            </div>
+            <button class="ghost-button" id="copyRouter">Copy Router Output</button>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="routerForm">
+              <label>
+                Paste any client message
+                <textarea id="routerInput">محتاج أظبط صفحتي والمحتوى والطلبات بتضيع مني على واتساب.</textarea>
+              </label>
+              <fieldset>
+                <legend>Known issues</legend>
+                <div id="issueChecks" class="checklist compact"></div>
+              </fieldset>
+              <button type="submit" class="primary-button">Route Request</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>Recommended action</h3>
+              <pre id="routerOutput"></pre>
+            </article>
+          </div>
+        </section>
+
+        <section id="brand" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Source of truth</p>
+              <h2>Brand Brain</h2>
+            </div>
+            <button class="ghost-button" data-copy-target="brandJson">Copy JSON</button>
+          </div>
+          <div class="two-column">
+            <article class="surface">
+              <h3>Positioning</h3>
+              <p class="lead">KYAN helps small and medium businesses organize, digitize, automate, and grow through smart systems, websites, digital presence, and technical support.</p>
+              <p class="arabic">كيان بيساعد البيزنس الصغير والمتوسط ينظم شغله، يطوّر وجوده أونلاين، ويتابع العملاء والمبيعات بسيستم بسيط وعملي.</p>
+            </article>
+            <article class="surface">
+              <h3>Voice Rules</h3>
+              <div id="voiceRules" class="tag-grid"></div>
+            </article>
+          </div>
+          <pre id="brandJson" class="code-block"></pre>
+        </section>
+
+        <section id="content" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Content factory</p>
+              <h2>Generate a KYAN content draft</h2>
+            </div>
+            <button class="ghost-button" id="copyDraft">Copy Draft</button>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="contentForm">
+              <label>
+                Pillar
+                <select id="pillarSelect"></select>
+              </label>
+              <label>
+                Format
+                <select id="formatSelect">
+                  <option>Facebook Post</option>
+                  <option>Reel Script</option>
+                  <option>Carousel</option>
+                  <option>Story</option>
+                </select>
+              </label>
+              <label>
+                Audience
+                <select id="audienceSelect"></select>
+              </label>
+              <label>
+                Business pain
+                <input id="painInput" value="العملاء بيضيعوا بعد أول رسالة واتساب" />
+              </label>
+              <button type="submit" class="primary-button">Generate Draft</button>
+            </form>
+
+            <article class="surface output-panel">
+              <h3>Generated Draft</h3>
+              <pre id="draftOutput"></pre>
+            </article>
+          </div>
+        </section>
+
+        <section id="audit" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Lead magnet</p>
+              <h2>Free Business Audit Builder</h2>
+            </div>
+            <button class="ghost-button" id="copyAudit">Copy Audit</button>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="auditForm">
+              <label>
+                Business or page reviewed
+                <input id="businessName" value="Client Facebook Page" />
+              </label>
+              <label>
+                Main problem
+                <input id="mainProblem" value="الصفحة مش بتوضح العرض ولا الخطوة الجاية للعميل" />
+              </label>
+              <fieldset>
+                <legend>Areas to flag</legend>
+                <div id="auditChecks" class="checklist compact"></div>
+              </fieldset>
+              <button type="submit" class="primary-button">Build Audit</button>
+            </form>
+
+            <article class="surface output-panel">
+              <h3>Audit Report</h3>
+              <pre id="auditOutput"></pre>
+            </article>
+          </div>
+        </section>
+
+        <section id="systems" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Build tools</p>
+              <h2>Systems Builder</h2>
+            </div>
+            <button class="ghost-button" id="copySystemPlan">Copy System Plan</button>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="systemForm">
+              <label>
+                System type
+                <select id="systemType">
+                  <option>Google Sheets CRM</option>
+                  <option>n8n Automation</option>
+                  <option>Landing Page</option>
+                  <option>Technical Support</option>
+                  <option>Monthly Support</option>
+                </select>
+              </label>
+              <label>
+                Business workflow
+                <textarea id="workflowInput">Leads arrive from Facebook and WhatsApp. Owner replies manually. Some clients ask again later. Orders and payments are tracked in chat only.</textarea>
+              </label>
+              <label>
+                Main goal
+                <input id="systemGoal" value="Stop losing leads and know who needs follow-up today" />
+              </label>
+              <button type="submit" class="primary-button">Build System Plan</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>System blueprint</h3>
+              <pre id="systemOutput"></pre>
+            </article>
+          </div>
+        </section>
+
+        <section id="delivery" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Playbooks</p>
+              <h2>Service Delivery Guidelines</h2>
+            </div>
+          </div>
+          <div id="serviceCards" class="card-grid"></div>
+        </section>
+
+        <section id="templates" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Reusable assets</p>
+              <h2>Client templates</h2>
+            </div>
+            <button class="ghost-button" id="copyTemplate">Copy Selected</button>
+          </div>
+          <div class="generator-grid">
+            <div class="surface form-stack">
+              <label>
+                Template
+                <select id="templateSelect"></select>
+              </label>
+            </div>
+            <article class="surface output-panel">
+              <h3 id="templateTitle">Template</h3>
+              <pre id="templateOutput"></pre>
+            </article>
+          </div>
+        </section>
+
+        <section id="settings" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Live operations</p>
+              <h2>Settings / API Hub</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="saveSettings">Save Settings</button>
+              <button class="ghost-button" id="exportBackup">Export Backup</button>
+            </div>
+          </div>
+
+          <div class="two-column">
+            <form class="surface form-stack" id="settingsForm">
+              <h3>Connection Settings</h3>
+              <label>
+                AI provider
+                <select id="apiProvider">
+                  <option>openai</option>
+                  <option>openai-compatible</option>
+                  <option>anthropic</option>
+                  <option>gemini</option>
+                  <option>custom</option>
+                </select>
+              </label>
+              <label>
+                AI model
+                <input id="apiModel" value="gpt-4.1-mini" />
+              </label>
+              <label>
+                AI endpoint
+                <input id="aiEndpoint" value="/api/ai" />
+              </label>
+              <label>
+                Google Sheets endpoint
+                <input id="sheetsEndpoint" value="/api/sheets" />
+              </label>
+              <label>
+                Google Sheet ID
+                <input id="sheetId" placeholder="Paste your sheet ID after creating it" />
+              </label>
+              <label>
+                n8n webhook URL
+                <input id="n8nWebhook" placeholder="Optional: https://..." />
+              </label>
+              <div class="button-row">
+                <button type="button" class="primary-button" id="testApi">Test API</button>
+                <button type="button" class="ghost-button" id="pushAuditToSheets">Push Audit</button>
+                <button type="button" class="ghost-button" id="pushCaseToSheets">Push Case</button>
+              </div>
+            </form>
+
+            <article class="surface output-panel">
+              <h3>Connection status</h3>
+              <pre id="connectionOutput"></pre>
+            </article>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="aiAgentForm">
+              <h3>Flexible AI Agent</h3>
+              <label>
+                System prompt
+                <textarea id="aiSystemPrompt">You are KYAN Brain. Help diagnose client requests, recommend service paths, and write practical Egyptian-friendly business outputs. Never promise guaranteed sales.</textarea>
+              </label>
+              <label>
+                User request
+                <textarea id="aiUserPrompt">Create a short audit reply for a client whose Facebook page gets messages but no sales.</textarea>
+              </label>
+              <button type="submit" class="primary-button">Run AI Agent</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>AI output / request packet</h3>
+              <pre id="aiOutput"></pre>
+            </article>
+          </div>
+
+          <div class="surface">
+            <h3>Go-live checklist</h3>
+            <div id="liveChecklist" class="checklist"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

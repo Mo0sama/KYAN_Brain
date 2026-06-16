@@ -1,0 +1,71 @@
+# KYAN Brain Deployment
+
+## Recommended Live Stack
+
+- Cloudflare Pages: static frontend
+- Cloudflare Pages Functions: `/api/health`, `/api/ai`, `/api/sheets`
+- Google Sheets: first database
+- n8n or Google Apps Script: easiest first Sheets writer
+- AI provider: OpenAI, OpenAI-compatible, Anthropic, Gemini, or custom webhook
+
+## Accounts To Create
+
+1. Cloudflare account
+2. GitHub account or repository for the project
+3. Google account for Google Sheets
+4. AI provider account of your choice
+5. Optional: n8n Cloud account or self-hosted n8n
+6. Optional: domain name for a private KYAN URL
+
+## Cloudflare Environment Variables
+
+Add only the variables you need:
+
+```text
+AI_PROVIDER=openai
+AI_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=...
+
+OPENAI_COMPATIBLE_API_KEY=...
+OPENAI_COMPATIBLE_BASE_URL=https://provider.example.com/v1
+
+ANTHROPIC_API_KEY=...
+GEMINI_API_KEY=...
+
+CUSTOM_AI_URL=https://your-custom-endpoint.example.com
+CUSTOM_AI_API_KEY=...
+
+SHEETS_WEBHOOK_URL=https://your-n8n-or-apps-script-webhook
+SHEETS_WEBHOOK_TOKEN=optional-shared-secret
+N8N_WEBHOOK_URL=https://your-n8n-webhook
+```
+
+Never paste API keys into the browser Settings screen.
+
+## Deploy Steps
+
+1. Put the contents of this `KYAN_Brain` folder in a GitHub repository.
+2. In Cloudflare Pages, create a project from the repository.
+3. Build command: leave empty.
+4. Output directory: `/` if the repo root is this folder.
+5. Add environment variables.
+6. Deploy.
+7. Open `/api/health` to confirm the backend works.
+8. Open KYAN Brain > Settings / API and test the API.
+
+## Sheets Sync
+
+The included `/api/sheets` function is a safe proxy.
+For v1, connect it to n8n or Google Apps Script using `SHEETS_WEBHOOK_URL`.
+
+The browser sends:
+
+```json
+{
+  "sheet_id": "...",
+  "tab": "Client_Cases",
+  "payload": {}
+}
+```
+
+Your webhook writes that payload to the target Google Sheet.

@@ -1,0 +1,118 @@
+{
+  "brand_name": "KYAN - Integrated Business Solutions",
+  "arabic_name": "كيان - حلول الأعمال المتكاملة",
+  "tagline": "KYAN - من اللخبطة للنظام، ومن النظام للنمو.",
+  "positioning": "KYAN helps small and medium businesses organize, digitize, automate, and grow through smart business systems, websites, digital presence, and technical support.",
+  "arabic_positioning": "كيان بيساعد البيزنس الصغير والمتوسط ينظم شغله، يطوّر وجوده أونلاين، ويتابع العملاء والمبيعات بسيستم بسيط وعملي.",
+  "core_promise": "From random work to organized business growth.",
+  "arabic_core_promise": "من اللخبطة للنظام، ومن النظام للنمو.",
+  "tone": [
+    "practical",
+    "clear",
+    "confident",
+    "helpful",
+    "Egyptian-friendly",
+    "smart"
+  ],
+  "language_rules": {
+    "primary": "Simple Egyptian Arabic",
+    "allowed_english_terms": [
+      "CRM",
+      "Automation",
+      "System",
+      "Digital Presence",
+      "Landing Page"
+    ],
+    "avoid": [
+      "very formal Arabic",
+      "complicated technical English",
+      "generic agency talk"
+    ]
+  },
+  "target_audience": [
+    "small business owners",
+    "online stores",
+    "clinics",
+    "salons",
+    "coaches",
+    "service providers",
+    "local companies",
+    "entrepreneurs",
+    "businesses using WhatsApp as their main workflow"
+  ],
+  "services": [
+    "Facebook Page Setup & Optimization",
+    "Content Planning & Social Media Posts",
+    "Free Business Audit",
+    "Google Sheets CRM / Customer Tracking",
+    "n8n Automation",
+    "Website / Landing Page",
+    "Technical Support",
+    "Smart Business Solutions"
+  ],
+  "never_claim": [
+    "guaranteed sales",
+    "guaranteed viral content",
+    "first-page Google ranking",
+    "instant growth",
+    "zero-maintenance automation"
+  ],
+  "safe_claim": "We improve the system, clarity, follow-up, and customer journey to increase the chance of better results.",
+  "content_pillars": [
+    {
+      "pillar": "Business Organization",
+      "goal": "Show KYAN solves chaos",
+      "example_hook": "طلباتك متلخبطة؟ ده معناه إنك محتاج سيستم."
+    },
+    {
+      "pillar": "Digital Presence",
+      "goal": "Improve page and website trust",
+      "example_hook": "صفحتك شكلها كويس؟ ولا بتطرد العميل؟"
+    },
+    {
+      "pillar": "Sales & Follow-up",
+      "goal": "Teach lead conversion",
+      "example_hook": "العميل اللي مردتش عليه النهارده ممكن يشتري من منافسك."
+    },
+    {
+      "pillar": "Automation",
+      "goal": "Show time-saving systems",
+      "example_hook": "إزاي فورم بسيط يوفر عليك متابعة 20 عميل؟"
+    },
+    {
+      "pillar": "Google Sheets / CRM",
+      "goal": "Make practical systems easy",
+      "example_hook": "CRM بسيط للبيزنس الصغير."
+    },
+    {
+      "pillar": "Websites & SEO",
+      "goal": "Build technical authority",
+      "example_hook": "موقعك لازم يقول للعميل يعمل إيه في أول 5 ثواني."
+    },
+    {
+      "pillar": "Founder / Behind the Scenes",
+      "goal": "Build personal trust",
+      "example_hook": "إحنا بنبني KYAN بنفس السيستم اللي بنقدمه للعملاء."
+    },
+    {
+      "pillar": "Free Audit Offer",
+      "goal": "Generate leads",
+      "example_hook": "ابعت صفحتك ونقولك 5 حاجات تتظبط."
+    }
+  ],
+  "post_formula": [
+    "Strong hook",
+    "Real business pain",
+    "Simple explanation",
+    "Practical solution",
+    "Clear CTA"
+  ],
+  "kyan_method": [
+    "AUDIT - نحلل",
+    "ORGANIZE - ننظم",
+    "BUILD - نبني",
+    "AUTOMATE - نأتمت",
+    "IMPROVE - نطوّر"
+  ],
+  "primary_cta": "ابعتلنا لينك صفحتك أو موقعك لتحليل مجاني."
+}

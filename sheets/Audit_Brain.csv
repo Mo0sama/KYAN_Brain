@@ -1,0 +1,10 @@
+area,question,score_0_good_5_critical,recommended_service,fix_rule,path_rule
+Offer clarity,"Can a visitor understand what the business offers in 5 seconds?",,Facebook Page Setup,"Rewrite bio, About, services, pinned post, and CTA.","If score >= 3, page setup is an early step."
+Trust signals,"Does the business look real, active, and safe to contact?",,Facebook Page Setup,"Improve profile/cover, proof, photos, reviews, and business details.","If score >= 3, fix trust before ads or scaling content."
+Content quality,"Are posts useful, consistent, and connected to client problems?",,Content Planning,"Build pillars, calendar, hooks, captions, reels, and offer posts.","If clarity is weak, fix page message before heavy content."
+CTA and contact flow,"Is the next step clear: WhatsApp, Messenger, form, or website?",,Facebook Page Setup,"Clarify one CTA and connect it to a simple follow-up path.","If CTA is weak, do not recommend ads yet."
+Sales follow-up,"Are leads replied to, tracked, and followed up at the right time?",,Google Sheets CRM,"Create lead stages, follow-up dates, owner view, and daily task list.","CRM comes before automation."
+Orders and payments,"Are orders, delivery, and payments tracked outside chat?",,Google Sheets CRM,"Create orders, payments, delivery status, and dashboard tabs.","If orders are messy, build tracker before automation."
+Manual repetitive work,"Are repeated tasks wasting time after the process is clear?",,n8n Automation,"Automate intake, sheet updates, reminders, notifications, and reports.","Only automate after the process is organized."
+Website / landing page,"Does the business need a page that explains the offer and captures leads?",,Website / Landing Page,"Build hero, offer, services, proof, FAQ, SEO basics, and WhatsApp CTA.","Use landing page when social page is not enough to explain or convert."
+Technical risk,"Are there domain, hosting, email, SSL, DNS, backup, or website issues?",,Technical Support,"Back up first, diagnose, fix carefully, test, and document changes.","Handle technical blockers before growth work."
