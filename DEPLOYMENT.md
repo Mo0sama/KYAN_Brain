@@ -2,8 +2,8 @@
 
 ## Recommended Live Stack
 
-- Cloudflare Pages: static frontend
-- Cloudflare Pages Functions: `/api/health`, `/api/ai`, `/api/sheets`
+- Cloudflare Workers & Pages: static assets + Worker API
+- Cloudflare Pages Functions are also included for Pages-mode deployment
 - Google Sheets: first database
 - n8n or Google Apps Script: easiest first Sheets writer
 - AI provider: OpenAI, OpenAI-compatible, Anthropic, Gemini, or custom webhook
@@ -45,13 +45,15 @@ Never paste API keys into the browser Settings screen.
 ## Deploy Steps
 
 1. Put the contents of this `KYAN_Brain` folder in a GitHub repository.
-2. In Cloudflare Pages, create a project from the repository.
-3. Build command: leave empty.
-4. Output directory: `/` if the repo root is this folder.
+2. In Cloudflare Workers & Pages, create a project from the repository.
+3. If Cloudflare shows deploy command `npx wrangler deploy`, keep it.
+4. Build command: leave empty.
 5. Add environment variables.
 6. Deploy.
 7. Open `/api/health` to confirm the backend works.
 8. Open KYAN Brain > Settings / API and test the API.
+
+This repo includes `worker.js` plus `[assets]` in `wrangler.toml`, so Workers deploy mode can serve both the app files and `/api/*`.
 
 ## Sheets Sync
 
