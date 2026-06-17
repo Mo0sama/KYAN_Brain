@@ -1618,6 +1618,13 @@ function collectSettings() {
   };
 }
 
+function extractGoogleSheetId(value) {
+  const text = String(value || "").trim();
+  const match = text.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (match) return match[1];
+  return text;
+}
+
 function loadSettings() {
   const settings = getSettings();
   $("#apiProvider").value = settings.apiProvider;
@@ -1837,12 +1844,14 @@ Error: ${error.message}`;
 async function pushToSheets(tab, payload) {
   const settings = collectSettings();
   setSettings(settings);
-  if (!settings.sheetId) {
-    $("#connectionOutput").textContent = "Add a Google Sheet ID first.";
+  const sheetId = extractGoogleSheetId(settings.sheetId);
+  if (!sheetId) {
+    $("#connectionOutput").textContent = "Add a Google Sheet URL or ID first.";
     return;
   }
   const body = {
-    sheet_id: settings.sheetId,
+    sheet_id: sheetId,
+    sheet_url: settings.sheetId,
     tab,
     payload
   };

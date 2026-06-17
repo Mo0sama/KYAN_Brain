@@ -40,4 +40,6 @@ Suggested workflow:
 9. Use Reports to generate a client-ready audit report.
 10. Use Settings / API after deployment to connect AI, Sheets, and n8n.
 
+Google Sheets note: the Settings field accepts either the full Google Sheet URL or only the Sheet ID.
+
 No setup, server, or internet connection is required.

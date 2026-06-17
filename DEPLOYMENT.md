@@ -108,6 +108,8 @@ SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/...
 7. In KYAN Brain > Settings / API, add the Google Sheet ID.
 8. Use Push Case, Push Audit, or Push Report.
 
+You can paste the full Google Sheet URL into KYAN Brain. The app and Apps Script will extract the Sheet ID automatically.
+
 The browser sends:
 
 ```json

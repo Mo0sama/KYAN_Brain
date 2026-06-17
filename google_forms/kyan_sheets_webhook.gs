@@ -12,7 +12,7 @@ const KYAN_ALLOWED_TABS = [
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents || '{}');
-    const sheetId = body.sheet_id;
+    const sheetId = extractSheetId(body.sheet_id || body.sheet_url);
     const tab = body.tab;
     const payload = body.payload || {};
 
@@ -40,6 +40,13 @@ function doPost(e) {
 
 function getOrCreateSheet(spreadsheet, tab) {
   return spreadsheet.getSheetByName(tab) || spreadsheet.insertSheet(tab);
+}
+
+function extractSheetId(value) {
+  const text = String(value || '').trim();
+  const match = text.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (match) return match[1];
+  return text;
 }
 
 function appendObject(sheet, object) {
