@@ -584,7 +584,7 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">Content factory</p>
-              <h2>Generate a KYAN content draft</h2>
+              <h2>Content Draft Builder</h2>
             </div>
             <button class="ghost-button" id="copyDraft">Copy Draft</button>
           </div>
@@ -616,8 +616,8 @@
             </form>
 
             <article class="surface output-panel">
-              <h3>Generated Draft</h3>
-              <pre id="draftOutput"></pre>
+              <h3>Ready-to-use draft</h3>
+              <div id="draftOutput" class="human-output"></div>
             </article>
           </div>
         </section>
@@ -629,9 +629,9 @@
               <h2>Content Flywheel</h2>
             </div>
             <div class="button-row">
-              <button class="ghost-button" id="copyFlywheel">Copy Pack</button>
-              <button class="ghost-button" id="saveFlywheelToOps">Save Queue</button>
-              <button class="ghost-button" id="pushFlywheelToSheets">Push Sheets</button>
+              <button class="ghost-button" id="copyFlywheel">Copy Content Pack</button>
+              <button class="ghost-button" id="saveFlywheelToOps">Save To Daily Ops</button>
+              <button class="ghost-button" id="pushFlywheelToSheets">Push To Sheets</button>
             </div>
           </div>
 
@@ -695,7 +695,7 @@
                 <textarea id="flywheelInput">Client gets messages on Facebook and WhatsApp, but no one tracks who asked, who needs follow-up, and who is ready to buy.</textarea>
               </label>
               <div class="button-row">
-                <button type="submit" class="primary-button">Generate Local Pack</button>
+                <button type="submit" class="primary-button">Generate Pack</button>
                 <button type="button" class="ghost-button" id="generateFlywheelAi">Use AI API</button>
               </div>
             </form>
@@ -703,14 +703,14 @@
             <div class="stacked-output">
               <article class="surface output-panel">
                 <div class="surface-head">
-                  <h3>Content pack</h3>
+                  <h3>Ready content pack</h3>
                   <button class="mini-button" id="copyFlywheelPrompt">Copy AI Prompt</button>
                 </div>
-                <pre id="flywheelOutput"></pre>
+                <div id="flywheelOutput" class="human-output"></div>
               </article>
               <article class="surface output-panel">
-                <h3>Service blueprint</h3>
-                <pre id="flywheelBlueprintOutput"></pre>
+                <h3>Recommended client path</h3>
+                <div id="flywheelBlueprintOutput" class="human-output"></div>
               </article>
             </div>
           </div>

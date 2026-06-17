@@ -561,6 +561,30 @@ KYAN - من اللخبطة للنظام، ومن النظام للنمو.`
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function listHtml(items) {
+  return `<ul>${(items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function textBlockHtml(text) {
+  return `<div class="copy-block">${escapeHtml(text)}</div>`;
+}
+
+function renderHumanOutput(target, sections) {
+  const element = typeof target === "string" ? $(target) : target;
+  element.innerHTML = sections.map((section) => `<section class="answer-section">
+    <h4>${escapeHtml(section.title)}</h4>
+    ${section.html}
+  </section>`).join("");
+}
+
 function showToast(message) {
   const toast = $("#toast");
   toast.textContent = message;
@@ -644,7 +668,19 @@ ${brain.tagline}`,
     hashtags: ["#KYAN", "#BusinessSystems", "#CRM", "#DigitalPresence", "#SmallBusiness"]
   };
 
-  $("#draftOutput").textContent = JSON.stringify(result, null, 2);
+  renderContentDraft(result);
+  localStorage.setItem("kyan_last_content_draft", JSON.stringify(result));
+}
+
+function renderContentDraft(result) {
+  renderHumanOutput("#draftOutput", [
+    { title: "Best Hook", html: textBlockHtml(result.selected_hook) },
+    { title: "Caption", html: textBlockHtml(result.caption) },
+    { title: "Other Hooks", html: listHtml(result.hook_options) },
+    { title: "Visual Brief", html: textBlockHtml(result.visual_brief) },
+    { title: "CTA", html: textBlockHtml(result.cta) },
+    { title: "Hashtags", html: `<div class="tag-grid">${result.hashtags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>` }
+  ]);
 }
 
 function flywheelInputPayload() {
@@ -805,24 +841,108 @@ Recommended path: ${path.join(" -> ")}.`
 }
 
 function renderFlywheelPack(pack) {
-  $("#flywheelOutput").textContent = JSON.stringify({
-    core_insight: pack.core_insight,
-    target_client: pack.target_client,
-    content_angle: pack.content_angle,
-    hooks: pack.hooks,
-    short_form_scripts: pack.short_form_scripts,
-    facebook_linkedin_posts: pack.facebook_linkedin_posts,
-    carousel_outline: pack.carousel_outline,
-    story_ideas: pack.story_ideas,
-    thread: pack.thread,
-    visual_direction: pack.visual_direction,
-    posting_schedule: pack.posting_schedule,
-    measurement_plan: pack.measurement_plan,
-    safety_rule: pack.safety_rule
-  }, null, 2);
-  $("#flywheelBlueprintOutput").textContent = JSON.stringify(pack.service_blueprint || {}, null, 2);
+  const scriptsHtml = (pack.short_form_scripts || []).map((script) => `<article class="mini-card">
+    <h5>${escapeHtml(script.title)}</h5>
+    <p><b>Hook:</b> ${escapeHtml(script.hook)}</p>
+    ${listHtml(script.beats || [])}
+    <p><b>Visual cues:</b> ${escapeHtml((script.visual_cues || []).join(" | "))}</p>
+  </article>`).join("");
+  const postsHtml = (pack.facebook_linkedin_posts || []).map((post) => `<article class="mini-card">
+    <h5>${escapeHtml(post.platform || "Post")}</h5>
+    ${textBlockHtml(post.caption || "")}
+  </article>`).join("");
+
+  renderHumanOutput("#flywheelOutput", [
+    { title: "Core Insight", html: textBlockHtml(pack.core_insight) },
+    { title: "Content Angle", html: textBlockHtml(pack.content_angle) },
+    { title: "Hooks", html: listHtml(pack.hooks) },
+    { title: "Short-Form Scripts", html: scriptsHtml },
+    { title: "Facebook / LinkedIn Posts", html: postsHtml },
+    { title: "Carousel Outline", html: listHtml(pack.carousel_outline) },
+    { title: "Stories", html: listHtml(pack.story_ideas) },
+    { title: "Thread", html: listHtml(pack.thread) },
+    { title: "Visual Direction", html: textBlockHtml(pack.visual_direction) },
+    { title: "Posting Schedule", html: listHtml(pack.posting_schedule) },
+    { title: "Measure This", html: listHtml(pack.measurement_plan) },
+    { title: "Safety Rule", html: textBlockHtml(pack.safety_rule) }
+  ]);
+
+  const blueprint = pack.service_blueprint || {};
+  renderHumanOutput("#flywheelBlueprintOutput", [
+    { title: "Recommended Service", html: textBlockHtml(blueprint.recommended_service || "Free Business Audit") },
+    { title: "Why This Path", html: textBlockHtml(blueprint.why_this_path || "") },
+    { title: "Service Path", html: listHtml(blueprint.path || []) },
+    { title: "Discovery Questions", html: listHtml(blueprint.discovery_questions || []) },
+    { title: "Delivery Steps", html: listHtml(blueprint.delivery_steps || []) },
+    { title: "Deliverables", html: listHtml(blueprint.deliverables || []) },
+    { title: "Next Upsell", html: textBlockHtml(blueprint.next_upsell || "") }
+  ]);
   localStorage.setItem("kyan_last_flywheel_pack", JSON.stringify(pack));
   return pack;
+}
+
+function flywheelPackToText(pack = latestFlywheelPack()) {
+  const scripts = (pack.short_form_scripts || []).map((script) => `${script.title}
+Hook: ${script.hook}
+Beats:
+${formatList(script.beats || [])}`).join("\n\n");
+  const posts = (pack.facebook_linkedin_posts || []).map((post) => `${post.platform}
+${post.caption}`).join("\n\n");
+  const blueprint = pack.service_blueprint || {};
+  return `KYAN CONTENT FLYWHEEL
+
+CORE INSIGHT
+${pack.core_insight}
+
+CONTENT ANGLE
+${pack.content_angle}
+
+HOOKS
+${formatList(pack.hooks || [])}
+
+SHORT-FORM SCRIPTS
+${scripts}
+
+FACEBOOK / LINKEDIN POSTS
+${posts}
+
+CAROUSEL OUTLINE
+${formatList(pack.carousel_outline || [])}
+
+STORIES
+${formatList(pack.story_ideas || [])}
+
+THREAD
+${formatList(pack.thread || [])}
+
+VISUAL DIRECTION
+${pack.visual_direction}
+
+POSTING SCHEDULE
+${formatList(pack.posting_schedule || [])}
+
+MEASUREMENT PLAN
+${formatList(pack.measurement_plan || [])}
+
+SERVICE BLUEPRINT
+Recommended service: ${blueprint.recommended_service || "Free Business Audit"}
+Why: ${blueprint.why_this_path || ""}
+Path: ${(blueprint.path || []).join(" -> ")}
+
+Discovery:
+${formatList(blueprint.discovery_questions || [])}
+
+Delivery:
+${formatList(blueprint.delivery_steps || [])}
+
+Deliverables:
+${formatList(blueprint.deliverables || [])}
+
+Next upsell:
+${blueprint.next_upsell || ""}
+
+SAFETY RULE
+${pack.safety_rule}`;
 }
 
 function generateContentFlywheel(event) {
@@ -858,25 +978,22 @@ async function generateContentFlywheelWithAi() {
   try {
     const data = await requestJson(settings.aiEndpoint, requestPayload);
     const output = data.output || JSON.stringify(data, null, 2);
-    $("#flywheelOutput").textContent = output;
     try {
       const parsed = JSON.parse(output);
-      $("#flywheelBlueprintOutput").textContent = JSON.stringify(parsed.service_blueprint || parsed, null, 2);
-      localStorage.setItem("kyan_last_flywheel_pack", JSON.stringify({ ...parsed, input: payload, created_at: new Date().toISOString() }));
+      renderFlywheelPack({ ...parsed, input: payload, created_at: new Date().toISOString() });
     } catch (parseError) {
-      $("#flywheelBlueprintOutput").textContent = "AI returned text, not strict JSON. Copy the pack, or rerun with a stricter model/prompt.";
+      renderHumanOutput("#flywheelOutput", [
+        { title: "AI Content Pack", html: textBlockHtml(output) },
+        { title: "Note", html: textBlockHtml("The AI returned normal text instead of structured sections. You can still copy it, or rerun with the local generator.") }
+      ]);
+      renderHumanOutput("#flywheelBlueprintOutput", [
+        { title: "Service Blueprint", html: textBlockHtml("No structured blueprint was found in the AI response.") }
+      ]);
     }
   } catch (error) {
     const fallback = buildLocalFlywheelPack(payload);
     renderFlywheelPack(fallback);
-    $("#flywheelOutput").textContent += `
-
-AI request not completed. Local pack generated instead.
-
-Copy this AI packet if you want to run it manually:
-${JSON.stringify(requestPayload, null, 2)}
-
-Error: ${error.message}`;
+    showToast("AI unavailable. Local pack generated.");
   }
 }
 
@@ -1901,12 +2018,16 @@ function loadSettings() {
   $("#sheetsEndpoint").value = settings.sheetsEndpoint;
   $("#sheetId").value = settings.sheetId;
   $("#n8nWebhook").value = settings.n8nWebhook;
-  $("#connectionOutput").textContent = `Saved settings loaded.
+  $("#connectionOutput").textContent = `Settings loaded.
+
+How to use this area:
+1. Keep API keys inside Cloudflare environment variables.
+2. Use this screen only for provider, model, endpoints, Sheet URL, and webhooks.
+3. Test API before using AI generation.
+4. Test Sheets before pushing reports or content.
 
 Security rule:
-- Do not paste API keys here.
-- Put API keys in Cloudflare Pages environment variables.
-- Browser stores only endpoint URLs, model name, and Sheet ID.`;
+Do not paste secret API keys into the browser.`;
 }
 
 async function requestJson(url, payload) {
@@ -2064,7 +2185,16 @@ async function testApiConnection() {
   try {
     const response = await fetch(healthUrl);
     const data = await response.json();
-    $("#connectionOutput").textContent = JSON.stringify({ ok: true, healthUrl, data }, null, 2);
+    $("#connectionOutput").textContent = `API connection is reachable.
+
+Checked:
+${healthUrl}
+
+Status:
+${data.ok === false ? "Backend responded, but needs configuration." : "Backend responded successfully."}
+
+Next:
+Run a small AI test. If it fails, check provider keys in Cloudflare environment variables.`;
   } catch (error) {
     $("#connectionOutput").textContent = `Could not reach ${healthUrl}.
 
@@ -2126,7 +2256,16 @@ async function pushToSheets(tab, payload) {
   $("#connectionOutput").textContent = `Pushing ${tab}...`;
   try {
     const data = await requestJson(settings.sheetsEndpoint, body);
-    $("#connectionOutput").textContent = JSON.stringify(data, null, 2);
+    $("#connectionOutput").textContent = `Google Sheets push completed.
+
+Tab:
+${tab}
+
+Result:
+${data.ok === false ? "The webhook responded but reported a problem." : "The row was sent to the sheet webhook."}
+
+Next:
+Open the Google Sheet and confirm the new row appeared.`;
   } catch (error) {
     $("#connectionOutput").textContent = `Sheet push not completed.
 
@@ -2219,7 +2358,7 @@ $("#aiAgentForm").addEventListener("submit", runAiAgent);
 $("#templateSelect").addEventListener("change", renderTemplate);
 $("#copyBrain").addEventListener("click", () => copyText(templates["AI Agent System Prompt"]));
 $("#copyDraft").addEventListener("click", () => copyText($("#draftOutput").textContent));
-$("#copyFlywheel").addEventListener("click", () => copyText(`${$("#flywheelOutput").textContent}\n\nSERVICE BLUEPRINT\n${$("#flywheelBlueprintOutput").textContent}`));
+$("#copyFlywheel").addEventListener("click", () => copyText(flywheelPackToText()));
 $("#copyFlywheelPrompt").addEventListener("click", () => copyText(flywheelPrompt()));
 $("#saveFlywheelToOps").addEventListener("click", saveFlywheelToOps);
 $("#generateFlywheelAi").addEventListener("click", generateContentFlywheelWithAi);
