@@ -18,22 +18,37 @@
         </div>
 
         <nav class="nav-list">
-          <button class="nav-item active" data-section="command">Command</button>
-          <button class="nav-item" data-section="dailyOps">Daily Ops</button>
-          <button class="nav-item" data-section="formIntake">Form Intake</button>
-          <button class="nav-item" data-section="auditBrain">Audit Brain</button>
-          <button class="nav-item" data-section="auditPlaybook">Audit Playbook</button>
-          <button class="nav-item" data-section="client">Client Desk</button>
-          <button class="nav-item" data-section="reports">Reports</button>
-          <button class="nav-item" data-section="router">Request Router</button>
-          <button class="nav-item" data-section="brand">Brand Brain</button>
-          <button class="nav-item" data-section="content">Content Engine</button>
-          <button class="nav-item" data-section="flywheel">Content Flywheel</button>
-          <button class="nav-item" data-section="audit">Audit Builder</button>
-          <button class="nav-item" data-section="systems">Systems Builder</button>
-          <button class="nav-item" data-section="delivery">Service Delivery</button>
-          <button class="nav-item" data-section="templates">Templates</button>
-          <button class="nav-item" data-section="settings">Settings / API</button>
+          <div class="nav-group">
+            <p class="nav-group-title">Operate</p>
+            <button class="nav-item active" data-section="command"><span>01</span> Command Center</button>
+            <button class="nav-item" data-section="dailyOps"><span>02</span> Daily Ops</button>
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-group-title">Client Path</p>
+            <button class="nav-item" data-section="formIntake"><span>03</span> Intake Forms</button>
+            <button class="nav-item" data-section="router"><span>04</span> Request Router</button>
+            <button class="nav-item" data-section="auditBrain"><span>05</span> Audit Brain</button>
+            <button class="nav-item" data-section="client"><span>06</span> Client Desk</button>
+            <button class="nav-item" data-section="reports"><span>07</span> Reports</button>
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-group-title">Growth</p>
+            <button class="nav-item" data-section="flywheel"><span>08</span> Content Flywheel</button>
+            <button class="nav-item" data-section="content"><span>09</span> Draft Builder</button>
+            <button class="nav-item" data-section="brand"><span>10</span> Brand Brain</button>
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-group-title">Build & Library</p>
+            <button class="nav-item" data-section="auditPlaybook"><span>11</span> Audit Playbook</button>
+            <button class="nav-item" data-section="audit"><span>12</span> Audit Builder</button>
+            <button class="nav-item" data-section="systems"><span>13</span> Systems Builder</button>
+            <button class="nav-item" data-section="delivery"><span>14</span> Service Delivery</button>
+            <button class="nav-item" data-section="templates"><span>15</span> Templates</button>
+            <button class="nav-item" data-section="settings"><span>16</span> Settings / API</button>
+          </div>
         </nav>
 
         <div class="sidebar-footer">
@@ -68,6 +83,40 @@
               <span>Golden rule</span>
               <strong>System first. Automation second.</strong>
             </article>
+          </div>
+
+          <div class="surface">
+            <div class="surface-head">
+              <h3>Normal KYAN workflow</h3>
+              <span class="status-pill">Start here when a client appears</span>
+            </div>
+            <div class="workflow-strip">
+              <button class="workflow-step" data-jump="formIntake">
+                <span>1</span>
+                <strong>Collect Intake</strong>
+                <small>Google Form or pasted client answers</small>
+              </button>
+              <button class="workflow-step" data-jump="router">
+                <span>2</span>
+                <strong>Route Request</strong>
+                <small>Understand the main problem</small>
+              </button>
+              <button class="workflow-step" data-jump="auditBrain">
+                <span>3</span>
+                <strong>Audit</strong>
+                <small>Score and choose the path</small>
+              </button>
+              <button class="workflow-step" data-jump="client">
+                <span>4</span>
+                <strong>Plan Delivery</strong>
+                <small>Tasks, reply, and service path</small>
+              </button>
+              <button class="workflow-step" data-jump="reports">
+                <span>5</span>
+                <strong>Send Report</strong>
+                <small>Client-ready recommendation</small>
+              </button>
+            </div>
           </div>
 
           <div class="two-column">

@@ -2301,13 +2301,23 @@ function exportBackupFile() {
   showToast("Backup exported");
 }
 
+function navigateTo(sectionId) {
+  const button = $(`.nav-item[data-section="${sectionId}"]`);
+  const panel = $(`#${sectionId}`);
+  if (!button || !panel) return;
+  $$(".nav-item").forEach((item) => item.classList.remove("active"));
+  $$(".panel").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  panel.classList.add("active");
+  document.querySelector(".workspace")?.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 $$(".nav-item").forEach((button) => {
-  button.addEventListener("click", () => {
-    $$(".nav-item").forEach((item) => item.classList.remove("active"));
-    $$(".panel").forEach((panel) => panel.classList.remove("active"));
-    button.classList.add("active");
-    $(`#${button.dataset.section}`).classList.add("active");
-  });
+  button.addEventListener("click", () => navigateTo(button.dataset.section));
+});
+
+$$("[data-jump]").forEach((button) => {
+  button.addEventListener("click", () => navigateTo(button.dataset.jump));
 });
 
 $("#contentForm").addEventListener("submit", (event) => {

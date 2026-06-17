@@ -32,17 +32,19 @@ textarea {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 292px minmax(0, 1fr);
   min-height: 100vh;
 }
 
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 28px 22px;
+  gap: 22px;
+  max-height: 100vh;
+  padding: 24px 18px;
   color: var(--white);
   background: linear-gradient(180deg, var(--charcoal), #163b40 62%, #0c6973);
+  overflow: auto;
 }
 
 .brand-lockup {
@@ -87,13 +89,31 @@ textarea {
 
 .nav-list {
   display: grid;
-  gap: 8px;
+  gap: 18px;
+}
+
+.nav-group {
+  display: grid;
+  gap: 7px;
+}
+
+.nav-group-title {
+  margin: 0 0 2px;
+  color: rgba(255, 255, 255, 0.54);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .nav-item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: center;
+  gap: 9px;
   width: 100%;
-  min-height: 44px;
-  padding: 10px 12px;
+  min-height: 40px;
+  padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   color: rgba(255, 255, 255, 0.82);
@@ -102,10 +122,28 @@ textarea {
   cursor: pointer;
 }
 
+.nav-item span {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 24px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  font-weight: 900;
+}
+
 .nav-item.active,
 .nav-item:hover {
   color: var(--white);
   background: rgba(255, 255, 255, 0.16);
+}
+
+.nav-item.active span,
+.nav-item:hover span {
+  color: var(--charcoal);
+  background: var(--gold);
 }
 
 .sidebar-footer {
@@ -117,7 +155,7 @@ textarea {
 }
 
 .workspace {
-  padding: 32px;
+  padding: 28px;
   overflow: auto;
 }
 
@@ -143,7 +181,7 @@ textarea {
 
 .section-head h2 {
   color: var(--charcoal);
-  font-size: clamp(28px, 4vw, 46px);
+  font-size: clamp(26px, 3vw, 38px);
   line-height: 1;
 }
 
@@ -436,6 +474,62 @@ select[multiple] {
   margin-bottom: 0;
 }
 
+.status-pill {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--teal);
+  background: #eef9fa;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.workflow-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.workflow-step {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 148px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #fbfefe;
+  text-align: left;
+  cursor: pointer;
+}
+
+.workflow-step:hover {
+  border-color: var(--teal);
+  box-shadow: 0 10px 24px rgba(8, 127, 140, 0.12);
+}
+
+.workflow-step span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: var(--white);
+  background: var(--teal);
+  font-weight: 900;
+}
+
+.workflow-step strong {
+  color: var(--charcoal);
+  font-size: 16px;
+}
+
+.workflow-step small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .ops-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -626,17 +720,23 @@ select[multiple] {
   .generator-grid,
   .client-grid,
   .ops-grid,
-  .ops-board {
+  .ops-board,
+  .workflow-strip {
     grid-template-columns: 1fr;
   }
 
   .sidebar {
     position: static;
+    max-height: none;
   }
 
   .metrics-grid,
   .card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workflow-step {
+    min-height: auto;
   }
 }
 
