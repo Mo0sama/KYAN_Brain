@@ -22,6 +22,7 @@
           <button class="nav-item" data-section="dailyOps">Daily Ops</button>
           <button class="nav-item" data-section="formIntake">Form Intake</button>
           <button class="nav-item" data-section="auditBrain">Audit Brain</button>
+          <button class="nav-item" data-section="auditPlaybook">Audit Playbook</button>
           <button class="nav-item" data-section="client">Client Desk</button>
           <button class="nav-item" data-section="router">Request Router</button>
           <button class="nav-item" data-section="brand">Brand Brain</button>
@@ -352,6 +353,43 @@
                 <pre id="auditClientReplyOutput"></pre>
               </article>
             </div>
+          </div>
+        </section>
+
+        <section id="auditPlaybook" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Audit execution</p>
+              <h2>Audit Playbook</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="copyAuditChecklist">Copy Checklist</button>
+              <button class="ghost-button" id="copyAuditTools">Copy Tools</button>
+            </div>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="auditPlaybookForm">
+              <h3>Choose audit type</h3>
+              <label>
+                Channel / system
+                <select id="auditPlaybookType"></select>
+              </label>
+              <label>
+                Client situation
+                <textarea id="auditPlaybookContext">Client gets messages from Facebook and Instagram but sales are low. They use WhatsApp only and do not track leads.</textarea>
+              </label>
+              <button type="submit" class="primary-button">Build Audit Checklist</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>Audit checklist</h3>
+              <pre id="auditPlaybookOutput"></pre>
+            </article>
+          </div>
+
+          <div class="surface">
+            <h3>Audit tools by channel</h3>
+            <div id="auditToolCards" class="card-grid"></div>
           </div>
         </section>
 

@@ -64,9 +64,10 @@ Use Daily Ops as the morning workspace:
 3. Add content ideas from real client problems.
 4. Send the Google Form audit from `google_forms/`.
 5. Use Form Intake to convert responses into client paths.
-6. Use Audit Brain to decide each client path.
-7. Use Client Desk for replies and delivery tasks.
-8. Export backup weekly until Sheets sync is connected.
+6. Use Audit Playbook to execute the manual review.
+7. Use Audit Brain to decide each client path.
+8. Use Client Desk for replies and delivery tasks.
+9. Export backup weekly until Sheets sync is connected.
 
 ## Google Form Audit
 

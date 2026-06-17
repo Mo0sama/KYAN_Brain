@@ -151,6 +151,151 @@ const googleAuditForm = [
   { section: "Sales", title: "Page/website link", type: "short", required: false, maps_to: "link" }
 ];
 
+const auditPlaybooks = {
+  "Facebook Page Audit": {
+    goal: "Decide whether the client needs page setup, content planning, CRM, or ads-readiness work.",
+    tools: ["Facebook Page public view", "Meta Business Suite", "Page inbox/Messenger", "WhatsApp Business", "Competitor pages"],
+    checks: [
+      "Profile photo is clear and recognizable in a small circle",
+      "Cover communicates offer, service, and CTA",
+      "Bio explains what the business does in one simple sentence",
+      "CTA button points to WhatsApp/Messenger correctly",
+      "About section has phone, location, website, hours, and services",
+      "Pinned post explains offer and next step",
+      "Last 10 posts are useful and not random",
+      "Comments/messages are answered quickly",
+      "Trust signals exist: reviews, real photos, proof, portfolio, FAQs",
+      "Lead flow after first message is tracked somewhere"
+    ],
+    scoring: "Score each area 0-5. Any 4-5 in clarity, CTA, or trust means Page Setup comes before ads/content scaling.",
+    redFlags: ["No clear CTA", "No pinned post", "Random posts only", "Messages handled from memory", "Boosting ads before page looks trustworthy"],
+    deliverables: ["Page audit report", "Top 5 fixes", "Recommended package", "Pinned post draft", "Bio/About rewrite"],
+    nextServices: ["Facebook Page Setup", "Content Planning", "Google Sheets CRM"]
+  },
+  "Instagram Audit": {
+    goal: "Decide whether Instagram needs profile optimization, content pillars, highlights, Reels, or DM follow-up system.",
+    tools: ["Instagram public profile", "Meta Business Suite", "Instagram Insights", "DM inbox", "Competitor Instagram profiles"],
+    checks: [
+      "Name field contains searchable business/service keyword",
+      "Bio explains offer, location/market, and next step",
+      "Link in bio works and supports the CTA",
+      "Highlights are organized: services, results, FAQ, reviews, location",
+      "Last 9 posts visually communicate the business clearly",
+      "Reels have strong first 2 seconds and useful topics",
+      "Captions include one clear CTA",
+      "Comments/DMs are answered and tracked",
+      "Content pillars are consistent",
+      "Trust proof exists: testimonials, before/after, client stories"
+    ],
+    scoring: "Score clarity, trust, content, CTA, and follow-up. If DMs are active but sales are low, CRM/follow-up is the likely next step.",
+    redFlags: ["Bio says nothing specific", "No highlights", "No link/CTA", "Pretty posts but no sales path", "DMs not tracked"],
+    deliverables: ["Instagram profile audit", "Bio rewrite", "Highlight plan", "Content pillar plan", "Reels ideas"],
+    nextServices: ["Content Planning", "Google Sheets CRM", "Monthly Business Support"]
+  },
+  "Website / Landing Page Audit": {
+    goal: "Decide whether the website can explain the offer and generate leads, or needs landing page/technical fixes.",
+    tools: ["Browser mobile view", "Google PageSpeed Insights", "Google Search Console", "Google Analytics if available", "BuiltWith/Wappalyzer optional"],
+    checks: [
+      "Hero explains offer in 5 seconds",
+      "Main CTA is visible above the fold and repeated later",
+      "WhatsApp/contact button works on mobile",
+      "Services are clear and easy to scan",
+      "Proof exists: testimonials, portfolio, numbers, reviews",
+      "FAQ handles objections",
+      "Page is mobile-friendly",
+      "PageSpeed mobile performance is acceptable",
+      "SEO title/meta description exist",
+      "Indexing/Search Console status is healthy",
+      "Forms/buttons are tested",
+      "SSL and basic technical setup are healthy"
+    ],
+    scoring: "If hero/CTA/mobile fail, fix landing page before SEO. If speed/indexing/SSL fail, technical support comes first.",
+    redFlags: ["No CTA above fold", "Broken WhatsApp/form", "Slow mobile page", "Not indexed", "No SSL", "Generic stock copy"],
+    deliverables: ["Website audit report", "Top 5 conversion fixes", "Technical fixes", "SEO basics checklist", "Landing page recommendation"],
+    nextServices: ["Website / Landing Page", "Technical Support", "SEO Basics", "Google Sheets CRM"]
+  },
+  "Google Business Profile Audit": {
+    goal: "Decide whether the business is ready for local search trust and customer actions.",
+    tools: ["Google Business Profile dashboard", "Google Maps public listing", "GBP performance", "Competitor map listings"],
+    checks: [
+      "Business name/category is accurate",
+      "Address/service area and hours are correct",
+      "Phone/website/booking links work",
+      "Services/products are filled",
+      "Photos are real, recent, and relevant",
+      "Reviews are present and answered",
+      "Business description is clear",
+      "Posts/updates are used if relevant",
+      "Questions and answers are handled",
+      "UTM/tracking is considered for website link"
+    ],
+    scoring: "If profile is incomplete or reviews are unmanaged, fix GBP before local ads.",
+    redFlags: ["Wrong category", "No photos", "Unanswered bad reviews", "Wrong hours", "Broken phone/link"],
+    deliverables: ["GBP audit", "Profile optimization checklist", "Review response templates", "Photo/post plan"],
+    nextServices: ["Digital Presence Setup", "Content Planning", "Monthly Business Support"]
+  },
+  "CRM / Follow-up Audit": {
+    goal: "Decide whether leads/orders/payments need a Google Sheets CRM before any automation.",
+    tools: ["WhatsApp chat flow", "Inbox review", "Existing Google Sheet/Excel", "Order/payment examples", "Manual process map"],
+    checks: [
+      "Lead sources are known",
+      "Required customer fields are clear",
+      "Lead stages are defined",
+      "Follow-up date is tracked",
+      "Owner knows who needs action today",
+      "Orders are separated from leads",
+      "Payments are tracked",
+      "Lost reasons are tracked",
+      "Dashboard shows useful numbers",
+      "Team knows how to use the system"
+    ],
+    scoring: "If follow-up/order/payment scores are 4-5, CRM is the first paid system. Automation waits until this is clear.",
+    redFlags: ["Everything inside WhatsApp", "No next follow-up date", "No owner view", "No payment status", "No lost reason"],
+    deliverables: ["Process map", "CRM requirements", "Sheet structure", "Dashboard requirements", "Handover guide"],
+    nextServices: ["Google Sheets CRM", "n8n Automation", "Monthly Business Support"]
+  },
+  "Automation Audit": {
+    goal: "Decide whether a process is ready for n8n automation or still needs organization first.",
+    tools: ["Process map", "Google Sheets", "n8n", "Google Forms", "Email/Telegram/WhatsApp notification tools", "Error examples"],
+    checks: [
+      "Trigger is clear",
+      "Inputs/fields are defined",
+      "Destination app is clear",
+      "Duplicate handling is defined",
+      "Error path is defined",
+      "Manual override exists",
+      "Client understands what the workflow does",
+      "Data is already organized",
+      "Testing examples are available",
+      "Maintenance owner is assigned"
+    ],
+    scoring: "If trigger/data/error path are unclear, do not automate yet. Build CRM/process first.",
+    redFlags: ["Client cannot explain the process", "No structured data", "No failure handling", "Automation requested to fix chaos"],
+    deliverables: ["Automation readiness report", "Workflow map", "Trigger/actions/fields", "Error handling plan", "n8n build scope"],
+    nextServices: ["Google Sheets CRM", "n8n Automation", "Monthly Business Support"]
+  },
+  "Technical Support Audit": {
+    goal: "Identify technical blockers safely before touching files, DNS, hosting, email, or website settings.",
+    tools: ["Hosting/cPanel dashboard", "Domain DNS panel", "SSL checker", "Website backup tool", "Browser console optional", "Google Search Console optional"],
+    checks: [
+      "Issue is clearly described",
+      "Access is available and authorized",
+      "Backup exists before changes",
+      "Domain DNS records are documented",
+      "SSL is valid",
+      "Business email works",
+      "Website loads on mobile/desktop",
+      "Recent changes are known",
+      "Error screenshots are collected",
+      "Rollback plan exists"
+    ],
+    scoring: "Any backup/access/DNS uncertainty is critical. Do not modify before documenting current state.",
+    redFlags: ["No backup", "Unknown DNS access", "Client asks for urgent changes without screenshots", "Email/domain involved with no rollback"],
+    deliverables: ["Technical support report", "Backup note", "Diagnosis", "Fix summary", "Prevention recommendation"],
+    nextServices: ["Technical Support", "Monthly Business Support"]
+  }
+};
+
 const issueSignals = [
   { id: "weak_page", label: "Weak or unclear Facebook page", keywords: ["page", "facebook", "bio", "cover", "profile", "صفحة", "فيسبوك", "بايو"] },
   { id: "low_sales", label: "Messages but low sales", keywords: ["sales", "بيع", "مبيعات", "واتساب", "message", "رسائل"] },
@@ -446,6 +591,7 @@ function renderOptions() {
   $("#audienceSelect").innerHTML = brain.audience.map((audience) => `<option>${audience}</option>`).join("");
   $("#templateSelect").innerHTML = Object.keys(templates).map((name) => `<option>${name}</option>`).join("");
   $("#opsContentPillar").innerHTML = pillars.map((pillar) => `<option>${pillar.name}</option>`).join("");
+  $("#auditPlaybookType").innerHTML = Object.keys(auditPlaybooks).map((name) => `<option>${name}</option>`).join("");
 }
 
 function renderStaticSections() {
@@ -682,6 +828,7 @@ function renderFormIntake() {
     ${questions.map((question) => `<div><b>${question.title}</b><div class="ops-meta"><span>${question.type}</span><span>${question.required ? "Required" : "Optional"}</span>${question.score_area ? `<span>Scores: ${question.score_area}</span>` : ""}</div></div>`).join("")}
   </div>`).join("");
   $("#formSchemaOutput").textContent = JSON.stringify(googleAuditForm, null, 2);
+  renderAuditToolCards();
 }
 
 function parseFormResponse(raw) {
@@ -830,6 +977,71 @@ function formQuestionsText() {
 Type: ${question.type}
 Required: ${question.required ? "Yes" : "No"}
 ${question.options ? `Options: ${question.options.join(" | ")}` : ""}`).join("\n\n");
+}
+
+function renderAuditToolCards() {
+  $("#auditToolCards").innerHTML = Object.entries(auditPlaybooks).map(([name, playbook]) => `<article class="surface service-card">
+    <h3>${name}</h3>
+    <ul>
+      <li><b>Goal:</b> ${playbook.goal}</li>
+      <li><b>Tools:</b> ${playbook.tools.slice(0, 4).join(", ")}</li>
+      <li><b>Next:</b> ${playbook.nextServices.join(" -> ")}</li>
+    </ul>
+  </article>`).join("");
+}
+
+function auditPlaybookText(name, context = "") {
+  const playbook = auditPlaybooks[name];
+  if (!playbook) return "Choose an audit type.";
+  return `AUDIT PLAYBOOK
+Type: ${name}
+
+CLIENT CONTEXT
+${context || "Not provided"}
+
+GOAL
+${playbook.goal}
+
+TOOLS TO USE
+${formatList(playbook.tools)}
+
+WHAT TO CHECK
+${playbook.checks.map((check, index) => `${index + 1}. ${check}`).join("\n")}
+
+SCORING RULE
+${playbook.scoring}
+
+RED FLAGS
+${formatList(playbook.redFlags)}
+
+DELIVERABLES
+${formatList(playbook.deliverables)}
+
+RECOMMENDED KYAN PATH
+${playbook.nextServices.map((service, index) => `${index + 1}. ${service}`).join("\n")}
+
+AUDIT OUTPUT FORMAT
+Business/Page Reviewed:
+Main Problem:
+Top 5 Fixes:
+Recommended KYAN Package:
+Next Step:
+
+SAFETY RULE
+Do not promise guaranteed sales, viral content, first-page ranking, or instant growth.`;
+}
+
+function buildAuditPlaybook(event) {
+  if (event) event.preventDefault();
+  const name = $("#auditPlaybookType").value;
+  const context = $("#auditPlaybookContext").value.trim();
+  $("#auditPlaybookOutput").textContent = auditPlaybookText(name, context);
+}
+
+function auditToolsText() {
+  return Object.entries(auditPlaybooks).map(([name, playbook]) => `${name}
+Tools: ${playbook.tools.join(", ")}
+Next services: ${playbook.nextServices.join(" -> ")}`).join("\n\n");
 }
 
 function renderTemplate() {
@@ -1578,6 +1790,7 @@ $("#auditBrainForm").addEventListener("submit", (event) => {
 });
 
 $("#formResponseForm").addEventListener("submit", parseFormResponseToPath);
+$("#auditPlaybookForm").addEventListener("submit", buildAuditPlaybook);
 $("#clientForm").addEventListener("submit", (event) => {
   event.preventDefault();
   buildClientPlan();
@@ -1611,6 +1824,8 @@ $("#copyAudit").addEventListener("click", () => copyText($("#auditOutput").textC
 $("#copyAuditBrain").addEventListener("click", () => copyText(`${$("#auditBrainOutput").textContent}\n\nCLIENT REPLY\n${$("#auditClientReplyOutput").textContent}`));
 $("#copyFormQuestions").addEventListener("click", () => copyText(formQuestionsText()));
 $("#copyFormSchema").addEventListener("click", () => copyText(JSON.stringify(googleAuditForm, null, 2)));
+$("#copyAuditChecklist").addEventListener("click", () => copyText($("#auditPlaybookOutput").textContent));
+$("#copyAuditTools").addEventListener("click", () => copyText(auditToolsText()));
 $("#copyClientPlan").addEventListener("click", () => copyText(`${$("#clientPlanOutput").textContent}\n\nCLIENT REPLY\n${$("#clientReplyOutput").textContent}`));
 $("#copyRouter").addEventListener("click", () => copyText($("#routerOutput").textContent));
 $("#copySystemPlan").addEventListener("click", () => copyText($("#systemOutput").textContent));
@@ -1656,5 +1871,6 @@ buildClientPlan();
 routeRequest();
 buildSystemPlan();
 renderTemplate();
+buildAuditPlaybook();
 loadSettings();
 renderOps();

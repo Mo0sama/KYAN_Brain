@@ -23,6 +23,7 @@ Portable assets:
 - `sheets/` CSV files for building the KYAN_Content_Engine workbook
 - `functions/api/` Cloudflare Pages Functions for live AI and Sheets proxy
 - `google_forms/` Apps Script and question schema to create the client audit form
+- `AUDIT_PLAYBOOK.md` for step-by-step audit execution
 - `DEPLOYMENT.md` for Cloudflare setup and environment variables
 
 Suggested workflow:
