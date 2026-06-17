@@ -28,6 +28,7 @@
           <button class="nav-item" data-section="router">Request Router</button>
           <button class="nav-item" data-section="brand">Brand Brain</button>
           <button class="nav-item" data-section="content">Content Engine</button>
+          <button class="nav-item" data-section="flywheel">Content Flywheel</button>
           <button class="nav-item" data-section="audit">Audit Builder</button>
           <button class="nav-item" data-section="systems">Systems Builder</button>
           <button class="nav-item" data-section="delivery">Service Delivery</button>
@@ -618,6 +619,100 @@
               <h3>Generated Draft</h3>
               <pre id="draftOutput"></pre>
             </article>
+          </div>
+        </section>
+
+        <section id="flywheel" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Daily growth machine</p>
+              <h2>Content Flywheel</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="copyFlywheel">Copy Pack</button>
+              <button class="ghost-button" id="saveFlywheelToOps">Save Queue</button>
+              <button class="ghost-button" id="pushFlywheelToSheets">Push Sheets</button>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric-card">
+              <span>Input</span>
+              <strong>1 rough idea</strong>
+            </article>
+            <article class="metric-card">
+              <span>Output</span>
+              <strong>Multi-platform pack</strong>
+            </article>
+            <article class="metric-card">
+              <span>Rule</span>
+              <strong>No viral guarantees</strong>
+            </article>
+            <article class="metric-card">
+              <span>Next step</span>
+              <strong>Publish, measure, improve</strong>
+            </article>
+          </div>
+
+          <div class="generator-grid wide-output">
+            <form class="surface form-stack" id="flywheelForm">
+              <h3>Raw input</h3>
+              <label>
+                Input type
+                <select id="flywheelInputType">
+                  <option>Audit insight</option>
+                  <option>Client problem</option>
+                  <option>Voice note transcript</option>
+                  <option>Delivery milestone</option>
+                  <option>Quick idea</option>
+                </select>
+              </label>
+              <label>
+                Platform focus
+                <select id="flywheelPlatform">
+                  <option>All platforms</option>
+                  <option>Facebook</option>
+                  <option>Instagram</option>
+                  <option>TikTok / Reels / Shorts</option>
+                  <option>LinkedIn</option>
+                  <option>Threads</option>
+                </select>
+              </label>
+              <label>
+                Language
+                <select id="flywheelLanguage">
+                  <option>Simple Egyptian Arabic</option>
+                  <option>English</option>
+                  <option>Bilingual</option>
+                </select>
+              </label>
+              <label>
+                Business context
+                <input id="flywheelContext" value="Egyptian SMB owner losing leads between Facebook, WhatsApp, and manual follow-up" />
+              </label>
+              <label>
+                Paste the rough idea, audit note, client pain, or voice note
+                <textarea id="flywheelInput">Client gets messages on Facebook and WhatsApp, but no one tracks who asked, who needs follow-up, and who is ready to buy.</textarea>
+              </label>
+              <div class="button-row">
+                <button type="submit" class="primary-button">Generate Local Pack</button>
+                <button type="button" class="ghost-button" id="generateFlywheelAi">Use AI API</button>
+              </div>
+            </form>
+
+            <div class="stacked-output">
+              <article class="surface output-panel">
+                <div class="surface-head">
+                  <h3>Content pack</h3>
+                  <button class="mini-button" id="copyFlywheelPrompt">Copy AI Prompt</button>
+                </div>
+                <pre id="flywheelOutput"></pre>
+              </article>
+              <article class="surface output-panel">
+                <h3>Service blueprint</h3>
+                <pre id="flywheelBlueprintOutput"></pre>
+              </article>
+            </div>
           </div>
         </section>
 

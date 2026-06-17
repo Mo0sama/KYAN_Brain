@@ -647,6 +647,274 @@ ${brain.tagline}`,
   $("#draftOutput").textContent = JSON.stringify(result, null, 2);
 }
 
+function flywheelInputPayload() {
+  return {
+    input_type: $("#flywheelInputType").value,
+    platform_focus: $("#flywheelPlatform").value,
+    language: $("#flywheelLanguage").value,
+    business_context: $("#flywheelContext").value.trim(),
+    raw_input: $("#flywheelInput").value.trim(),
+    created_at: new Date().toISOString()
+  };
+}
+
+function flywheelPrompt(payload = flywheelInputPayload()) {
+  return `Create a KYAN Content Flywheel pack.
+
+Brand:
+${JSON.stringify(brain, null, 2)}
+
+Input type: ${payload.input_type}
+Platform focus: ${payload.platform_focus}
+Language: ${payload.language}
+Business context: ${payload.business_context}
+Raw input: ${payload.raw_input}
+
+Return only valid JSON with these keys:
+core_insight, target_client, content_angle, hooks, short_form_scripts, facebook_linkedin_posts, carousel_outline, story_ideas, thread, visual_direction, posting_schedule, measurement_plan, service_blueprint.
+
+Rules:
+- Use practical, simple, Egyptian-friendly wording.
+- Make the content useful for small business owners.
+- Maximize useful reach through volume, consistency, hooks, proof, and platform-native formats.
+- Never promise guaranteed virality, guaranteed sales, first-page rankings, or instant growth.
+- service_blueprint must include recommended_service, why_this_path, discovery_questions, delivery_steps, deliverables, and next_upsell.`;
+}
+
+function buildLocalFlywheelPack(payload = flywheelInputPayload()) {
+  const issueText = `${payload.business_context} ${payload.raw_input}`;
+  const issues = detectIssues(issueText);
+  const { primary, secondary, path } = buildServicePath(issues);
+  const pain = payload.raw_input || payload.business_context || "The business has scattered work and no clear follow-up system.";
+  const target = payload.business_context || "Egyptian SMB owners";
+  const core = "Many SMBs do not need more random activity first. They need a cleaner system for clarity, follow-up, and daily execution.";
+  const hooks = [
+    "Your problem may not be marketing. It may be missing follow-up.",
+    "If every lead stays inside chat, your business is depending on memory.",
+    "More posts will not fix a broken customer journey.",
+    "Before automation, make the process visible.",
+    "A simple CRM can save leads you already paid time and effort to attract."
+  ];
+  const scripts = hooks.slice(0, 3).map((hook, index) => ({
+    title: `Short-form script ${index + 1}`,
+    hook,
+    beats: [
+      "Show the messy current situation: messages, notes, and forgotten follow-ups.",
+      `Name the real pain: ${pain}`,
+      "Show the KYAN method: Audit, Organize, Build, Automate, Improve.",
+      `Offer the next step: ${primary.name}.`
+    ],
+    visual_cues: ["Split screen before/after", "Quick screen recording of a clean sheet or dashboard", "End with one WhatsApp/free audit CTA"],
+    cta: brain.cta
+  }));
+
+  const posts = [
+    {
+      platform: "Facebook / LinkedIn",
+      caption: `${hooks[0]}
+
+${pain}
+
+Most small businesses try to solve this with more posts, more ads, or more manual effort. But if the customer journey is unclear, the same problem repeats.
+
+KYAN starts with the system:
+1. Audit the current setup
+2. Organize the client journey
+3. Build the simple tracker or workflow
+4. Automate only what is already clear
+
+Next logical step: ${primary.name}.
+
+${brain.cta}`
+    },
+    {
+      platform: "Facebook / LinkedIn",
+      caption: `A business can look active online and still lose clients every day.
+
+The issue is usually hidden in small details:
+- No clear CTA
+- No lead status
+- No follow-up date
+- No owner for the next step
+- No simple dashboard
+
+That is why KYAN works system first, automation second.
+
+Recommended path: ${path.join(" -> ")}.`
+    }
+  ];
+
+  const pack = {
+    pack_id: uid("flywheel"),
+    created_at: payload.created_at,
+    input: payload,
+    core_insight: core,
+    target_client: target,
+    content_angle: `${primary.name} as the practical next step for a messy customer journey.`,
+    hooks,
+    short_form_scripts: scripts,
+    facebook_linkedin_posts: posts,
+    carousel_outline: [
+      "Slide 1: The business problem is not always marketing",
+      "Slide 2: Where leads get lost",
+      "Slide 3: What to track first",
+      "Slide 4: The KYAN path",
+      `Slide 5: Start with ${primary.name}`,
+      "Slide 6: Free audit CTA"
+    ],
+    story_ideas: [
+      "Poll: Do you track follow-ups outside WhatsApp?",
+      "Before/after: messy chat vs organized CRM",
+      "Question box: Send your page and we will tell you the first bottleneck"
+    ],
+    thread: [
+      "1. If your leads are only in chat, you do not have a sales system yet.",
+      "2. Start by defining lead status, next follow-up, and owner.",
+      "3. Then connect the page, form, or WhatsApp flow.",
+      "4. Automation comes after the process is clean.",
+      `5. KYAN next step: ${primary.name}.`
+    ],
+    visual_direction: "Use clean teal/white/charcoal visuals. Show chaos becoming an organized tracker, dashboard, or client path. Avoid fake luxury, hype, and generic agency visuals.",
+    posting_schedule: [
+      "Day 1: Short-form script 1",
+      "Day 2: Facebook/LinkedIn post 1",
+      "Day 3: Stories poll + question box",
+      "Day 4: Carousel",
+      "Day 5: Short-form script 2",
+      "Day 6: Facebook/LinkedIn post 2",
+      "Day 7: Proof, behind-the-scenes, or audit invitation"
+    ],
+    measurement_plan: [
+      "Track saves, comments, replies, audit requests, and qualified leads.",
+      "Mark which hook created the most client conversations.",
+      "Turn best-performing posts into service examples and client report language."
+    ],
+    service_blueprint: {
+      recommended_service: primary.name,
+      secondary_service: secondary.name,
+      path,
+      why_this_path: primary.service.goal,
+      discovery_questions: primary.service.discovery,
+      delivery_steps: primary.service.tasks,
+      deliverables: primary.service.deliverables,
+      next_upsell: primary.service.upsell
+    },
+    safety_rule: "Maximize useful reach through volume, consistency, hooks, proof, and platform-native formats. No guaranteed virality, guaranteed sales, first-page rankings, or instant growth."
+  };
+  return pack;
+}
+
+function renderFlywheelPack(pack) {
+  $("#flywheelOutput").textContent = JSON.stringify({
+    core_insight: pack.core_insight,
+    target_client: pack.target_client,
+    content_angle: pack.content_angle,
+    hooks: pack.hooks,
+    short_form_scripts: pack.short_form_scripts,
+    facebook_linkedin_posts: pack.facebook_linkedin_posts,
+    carousel_outline: pack.carousel_outline,
+    story_ideas: pack.story_ideas,
+    thread: pack.thread,
+    visual_direction: pack.visual_direction,
+    posting_schedule: pack.posting_schedule,
+    measurement_plan: pack.measurement_plan,
+    safety_rule: pack.safety_rule
+  }, null, 2);
+  $("#flywheelBlueprintOutput").textContent = JSON.stringify(pack.service_blueprint || {}, null, 2);
+  localStorage.setItem("kyan_last_flywheel_pack", JSON.stringify(pack));
+  return pack;
+}
+
+function generateContentFlywheel(event) {
+  if (event) event.preventDefault();
+  return renderFlywheelPack(buildLocalFlywheelPack());
+}
+
+function latestFlywheelPack() {
+  try {
+    return JSON.parse(localStorage.getItem("kyan_last_flywheel_pack") || "null") || generateContentFlywheel();
+  } catch (error) {
+    return generateContentFlywheel();
+  }
+}
+
+async function generateContentFlywheelWithAi() {
+  const settings = collectSettings();
+  setSettings(settings);
+  const payload = flywheelInputPayload();
+  const requestPayload = {
+    provider: settings.apiProvider,
+    model: settings.apiModel,
+    system: "You are the KYAN Content Flywheel strategist. Return only valid JSON.",
+    input: flywheelPrompt(payload),
+    context: {
+      brand: brain,
+      service_knowledge: serviceKnowledge,
+      latest_case: latestCasePayload()
+    }
+  };
+  $("#flywheelOutput").textContent = "Sending Content Flywheel request...";
+  $("#flywheelBlueprintOutput").textContent = "Waiting for AI service blueprint...";
+  try {
+    const data = await requestJson(settings.aiEndpoint, requestPayload);
+    const output = data.output || JSON.stringify(data, null, 2);
+    $("#flywheelOutput").textContent = output;
+    try {
+      const parsed = JSON.parse(output);
+      $("#flywheelBlueprintOutput").textContent = JSON.stringify(parsed.service_blueprint || parsed, null, 2);
+      localStorage.setItem("kyan_last_flywheel_pack", JSON.stringify({ ...parsed, input: payload, created_at: new Date().toISOString() }));
+    } catch (parseError) {
+      $("#flywheelBlueprintOutput").textContent = "AI returned text, not strict JSON. Copy the pack, or rerun with a stricter model/prompt.";
+    }
+  } catch (error) {
+    const fallback = buildLocalFlywheelPack(payload);
+    renderFlywheelPack(fallback);
+    $("#flywheelOutput").textContent += `
+
+AI request not completed. Local pack generated instead.
+
+Copy this AI packet if you want to run it manually:
+${JSON.stringify(requestPayload, null, 2)}
+
+Error: ${error.message}`;
+  }
+}
+
+function saveFlywheelToOps() {
+  const pack = latestFlywheelPack();
+  const ops = normalizedOps();
+  const ideas = [
+    ...(pack.short_form_scripts || []).map((script) => ({
+      idea: script.hook || script.title,
+      format: "Reel",
+      pillar: "Sales & Follow-up"
+    })),
+    ...(pack.facebook_linkedin_posts || []).map((post) => ({
+      idea: post.caption ? post.caption.split("\n")[0] : "Facebook / LinkedIn post",
+      format: "Facebook Post",
+      pillar: "Business Organization"
+    })),
+    {
+      idea: (pack.carousel_outline || [])[0] || pack.content_angle || "Carousel from flywheel pack",
+      format: "Carousel",
+      pillar: "Free Audit Offer"
+    }
+  ].slice(0, 8);
+  ideas.reverse().forEach((idea) => {
+    ops.content.unshift({
+      id: uid("content"),
+      idea: idea.idea,
+      pillar: idea.pillar,
+      format: idea.format,
+      status: "Idea",
+      created_at: new Date().toISOString()
+    });
+  });
+  setOps(ops);
+  renderOps();
+  showToast("Flywheel saved to content queue");
+}
+
 function generateAudit() {
   const business = $("#businessName").value.trim();
   const problem = $("#mainProblem").value.trim();
@@ -1877,6 +2145,7 @@ function exportBackupFile() {
     cases: getCases(),
     reports: getReports(),
     ops: normalizedOps(),
+    last_flywheel_pack: latestFlywheelPack(),
     brain,
     audit_scorecard: auditScorecard,
     service_knowledge: serviceKnowledge
@@ -1906,6 +2175,7 @@ $("#contentForm").addEventListener("submit", (event) => {
   event.preventDefault();
   generateDraft();
 });
+$("#flywheelForm").addEventListener("submit", generateContentFlywheel);
 
 $("#auditForm").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -1949,6 +2219,11 @@ $("#aiAgentForm").addEventListener("submit", runAiAgent);
 $("#templateSelect").addEventListener("change", renderTemplate);
 $("#copyBrain").addEventListener("click", () => copyText(templates["AI Agent System Prompt"]));
 $("#copyDraft").addEventListener("click", () => copyText($("#draftOutput").textContent));
+$("#copyFlywheel").addEventListener("click", () => copyText(`${$("#flywheelOutput").textContent}\n\nSERVICE BLUEPRINT\n${$("#flywheelBlueprintOutput").textContent}`));
+$("#copyFlywheelPrompt").addEventListener("click", () => copyText(flywheelPrompt()));
+$("#saveFlywheelToOps").addEventListener("click", saveFlywheelToOps);
+$("#generateFlywheelAi").addEventListener("click", generateContentFlywheelWithAi);
+$("#pushFlywheelToSheets").addEventListener("click", () => pushToSheets("Content_Ideas", latestFlywheelPack()));
 $("#copyAudit").addEventListener("click", () => copyText($("#auditOutput").textContent));
 $("#copyAuditBrain").addEventListener("click", () => copyText(`${$("#auditBrainOutput").textContent}\n\nCLIENT REPLY\n${$("#auditClientReplyOutput").textContent}`));
 $("#copyFormQuestions").addEventListener("click", () => copyText(formQuestionsText()));
@@ -1997,6 +2272,7 @@ $$("[data-copy-target]").forEach((button) => button.addEventListener("click", ()
 renderOptions();
 renderStaticSections();
 generateDraft();
+generateContentFlywheel();
 generateAudit();
 determineAuditPath();
 buildClientPlan();

@@ -219,6 +219,10 @@ textarea {
   grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
 }
 
+.wide-output {
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1.28fr);
+}
+
 .stacked-output {
   display: grid;
   gap: 18px;
