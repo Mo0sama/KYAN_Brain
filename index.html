@@ -44,7 +44,7 @@
             <p class="nav-group-title">Build & Library</p>
             <button class="nav-item" data-section="auditPlaybook"><span>11</span> Audit Playbook</button>
             <button class="nav-item" data-section="audit"><span>12</span> Audit Builder</button>
-            <button class="nav-item" data-section="systems"><span>13</span> Systems Builder</button>
+            <button class="nav-item" data-section="systems"><span>13</span> Service Blueprint</button>
             <button class="nav-item" data-section="delivery"><span>14</span> Service Delivery</button>
             <button class="nav-item" data-section="templates"><span>15</span> Templates</button>
             <button class="nav-item" data-section="settings"><span>16</span> Settings / API</button>
@@ -801,16 +801,24 @@
         <section id="systems" class="panel">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Build tools</p>
-              <h2>Systems Builder</h2>
+              <p class="eyebrow">Delivery brain</p>
+              <h2>Service Blueprint Generator</h2>
             </div>
-            <button class="ghost-button" id="copySystemPlan">Copy System Plan</button>
+            <div class="button-row">
+              <button class="ghost-button" id="copySystemPlan">Copy Blueprint</button>
+              <button class="ghost-button" id="saveBlueprintToOps">Save Tasks</button>
+              <button class="ghost-button" id="pushBlueprintToSheets">Push Sheets</button>
+            </div>
           </div>
 
           <div class="generator-grid">
             <form class="surface form-stack" id="systemForm">
               <label>
-                System type
+                Client / project name
+                <input id="blueprintClientName" value="New KYAN Client" />
+              </label>
+              <label>
+                Recommended service
                 <select id="systemType">
                   <option>Google Sheets CRM</option>
                   <option>n8n Automation</option>
@@ -820,18 +828,31 @@
                 </select>
               </label>
               <label>
-                Business workflow
+                Scope level
+                <select id="blueprintScope">
+                  <option>Starter fix</option>
+                  <option>Standard build</option>
+                  <option>Full system</option>
+                  <option>Monthly support</option>
+                </select>
+              </label>
+              <label>
+                Current workflow / client request
                 <textarea id="workflowInput">Leads arrive from Facebook and WhatsApp. Owner replies manually. Some clients ask again later. Orders and payments are tracked in chat only.</textarea>
               </label>
               <label>
                 Main goal
                 <input id="systemGoal" value="Stop losing leads and know who needs follow-up today" />
               </label>
-              <button type="submit" class="primary-button">Build System Plan</button>
+              <label>
+                Timeline target
+                <input id="blueprintTimeline" value="3-7 working days depending on access and scope" />
+              </label>
+              <button type="submit" class="primary-button">Build Blueprint</button>
             </form>
             <article class="surface output-panel">
-              <h3>System blueprint</h3>
-              <pre id="systemOutput"></pre>
+              <h3>Delivery blueprint</h3>
+              <div id="systemOutput" class="human-output"></div>
             </article>
           </div>
         </section>

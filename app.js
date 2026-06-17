@@ -1585,8 +1585,11 @@ AVOID
 
 function buildSystemPlan() {
   const type = $("#systemType").value;
+  const clientName = $("#blueprintClientName").value.trim() || "New KYAN Client";
   const workflow = $("#workflowInput").value.trim();
   const goal = $("#systemGoal").value.trim();
+  const scope = $("#blueprintScope").value;
+  const timeline = $("#blueprintTimeline").value.trim();
   const serviceKey = {
     "Landing Page": "Website / Landing Page",
     "Monthly Support": "Monthly Business Support"
@@ -1646,30 +1649,164 @@ Week 3: Optimization and follow-up
 Week 4: Report and next recommendations`
   };
 
-  $("#systemOutput").textContent = `SYSTEM TYPE
-${type}
+  const accessMap = {
+    "Google Sheets CRM": ["Google account access or shared Sheet", "Current customer/order fields", "Sample leads/orders/payments", "Team members who will use the sheet"],
+    "n8n Automation": ["Trigger app access", "Destination app access", "Google Sheet or CRM structure", "Notification channel", "Test data", "Failure notification owner"],
+    "Landing Page": ["Business logo", "Services/offers", "WhatsApp number", "Photos/proof/testimonials", "Domain/hosting status", "FAQ answers"],
+    "Technical Support": ["Website/admin access", "Hosting/domain access", "Recent change history", "Screenshots", "Backup confirmation", "Permission to test after fix"],
+    "Monthly Support": ["Monthly goals", "Current systems access", "Content/assets", "Reporting sheet", "Priority task list", "Approval contact"]
+  };
+  const scopeBoundaries = {
+    "Starter fix": ["Fix the biggest bottleneck first", "Keep setup simple", "No complex automation unless the workflow is already clear"],
+    "Standard build": ["Build the main working system", "Include usage guide and handover", "Leave future improvements as next phase"],
+    "Full system": ["Map the complete workflow", "Build core system and reporting", "Prepare automation-ready structure"],
+    "Monthly support": ["Operate through monthly priorities", "Track completed work and results", "Improve system based on usage"]
+  };
+  const qaChecks = [
+    "Test with real sample data",
+    "Check mobile readability where relevant",
+    "Confirm owner knows the next daily action",
+    "Document what changed",
+    "List what is included and not included"
+  ];
+  const blueprint = {
+    blueprint_id: uid("blueprint"),
+    created_at: new Date().toISOString(),
+    client_name: clientName,
+    service: serviceKey,
+    scope,
+    timeline,
+    current_workflow: workflow,
+    main_goal: goal,
+    required_discovery: service.discovery,
+    required_access: accessMap[type] || accessMap["Google Sheets CRM"],
+    scope_boundaries: scopeBoundaries[scope] || scopeBoundaries["Standard build"],
+    delivery_phases: [
+      "Diagnose current setup",
+      "Confirm scope and required access",
+      "Design the workflow",
+      "Build the system",
+      "Test with sample data",
+      "Handover and explain usage",
+      "Recommend next improvement"
+    ],
+    build_tasks: service.tasks,
+    deliverables: service.deliverables,
+    technical_blueprint: outputMap[type] || outputMap["Google Sheets CRM"],
+    qa_checks: qaChecks,
+    client_handover: [
+      "Simple explanation of how to use the system",
+      "What KYAN changed",
+      "What the client must do daily or weekly",
+      "Support period and what is not included",
+      "Recommended next service"
+    ],
+    next_upsell: service.upsell,
+    safety_rule: "System first. Automation second. No guaranteed sales, viral content, ranking, or instant growth."
+  };
+
+  renderBlueprint(blueprint);
+  localStorage.setItem("kyan_last_blueprint", JSON.stringify(blueprint));
+  return blueprint;
+}
+
+function renderBlueprint(blueprint) {
+  renderHumanOutput("#systemOutput", [
+    { title: "Project", html: textBlockHtml(`${blueprint.client_name}\nService: ${blueprint.service}\nScope: ${blueprint.scope}\nTimeline: ${blueprint.timeline}`) },
+    { title: "Current Workflow", html: textBlockHtml(blueprint.current_workflow) },
+    { title: "Main Goal", html: textBlockHtml(blueprint.main_goal) },
+    { title: "Required Discovery", html: listHtml(blueprint.required_discovery) },
+    { title: "Required Access / Materials", html: listHtml(blueprint.required_access) },
+    { title: "Scope Boundaries", html: listHtml(blueprint.scope_boundaries) },
+    { title: "Delivery Phases", html: listHtml(blueprint.delivery_phases) },
+    { title: "Build Tasks", html: listHtml(blueprint.build_tasks) },
+    { title: "Deliverables", html: listHtml(blueprint.deliverables) },
+    { title: "Technical Blueprint", html: textBlockHtml(blueprint.technical_blueprint) },
+    { title: "QA Checks", html: listHtml(blueprint.qa_checks) },
+    { title: "Client Handover", html: listHtml(blueprint.client_handover) },
+    { title: "Next Upsell", html: textBlockHtml(blueprint.next_upsell) },
+    { title: "Safety Rule", html: textBlockHtml(blueprint.safety_rule) }
+  ]);
+}
+
+function latestBlueprint() {
+  try {
+    return JSON.parse(localStorage.getItem("kyan_last_blueprint") || "null") || buildSystemPlan();
+  } catch (error) {
+    return buildSystemPlan();
+  }
+}
+
+function blueprintToText(blueprint = latestBlueprint()) {
+  return `KYAN SERVICE BLUEPRINT
+
+PROJECT
+Client: ${blueprint.client_name}
+Service: ${blueprint.service}
+Scope: ${blueprint.scope}
+Timeline: ${blueprint.timeline}
 
 CURRENT WORKFLOW
-${workflow}
+${blueprint.current_workflow}
 
 MAIN GOAL
-${goal}
+${blueprint.main_goal}
 
 REQUIRED DISCOVERY
-${formatList(service.discovery)}
+${formatList(blueprint.required_discovery || [])}
+
+REQUIRED ACCESS / MATERIALS
+${formatList(blueprint.required_access || [])}
+
+SCOPE BOUNDARIES
+${formatList(blueprint.scope_boundaries || [])}
+
+DELIVERY PHASES
+${formatList(blueprint.delivery_phases || [])}
 
 BUILD TASKS
-${service.tasks.map((task) => `[ ] ${task}`).join("\n")}
+${(blueprint.build_tasks || []).map((task) => `[ ] ${task}`).join("\n")}
 
 DELIVERABLES
-${formatList(service.deliverables)}
+${formatList(blueprint.deliverables || [])}
 
-${outputMap[type]}
+TECHNICAL BLUEPRINT
+${blueprint.technical_blueprint}
 
-HANDOVER
-- Explain the system in simple language
-- Include next actions
-- Mention support period and what is not included`;
+QA CHECKS
+${formatList(blueprint.qa_checks || [])}
+
+CLIENT HANDOVER
+${formatList(blueprint.client_handover || [])}
+
+NEXT UPSELL
+${blueprint.next_upsell}
+
+SAFETY RULE
+${blueprint.safety_rule}`;
+}
+
+function saveBlueprintToOps() {
+  const blueprint = latestBlueprint();
+  const ops = normalizedOps();
+  const tasks = [
+    `Confirm scope and access for ${blueprint.client_name}`,
+    ...(blueprint.build_tasks || []).map((task) => `${blueprint.service}: ${task}`),
+    `Prepare handover for ${blueprint.client_name}`
+  ].slice(0, 10);
+  tasks.reverse().forEach((title) => {
+    ops.tasks.unshift({
+      id: uid("task"),
+      title,
+      area: "Client Delivery",
+      priority: "High",
+      done: false,
+      created_at: new Date().toISOString()
+    });
+  });
+  setOps(ops);
+  renderOps();
+  showToast("Blueprint tasks saved");
 }
 
 function getCases() {
@@ -2285,6 +2422,7 @@ function exportBackupFile() {
     reports: getReports(),
     ops: normalizedOps(),
     last_flywheel_pack: latestFlywheelPack(),
+    last_blueprint: latestBlueprint(),
     brain,
     audit_scorecard: auditScorecard,
     service_knowledge: serviceKnowledge
@@ -2384,7 +2522,9 @@ $("#saveClientReport").addEventListener("click", saveClientReport);
 $("#pushReportToSheets").addEventListener("click", () => pushToSheets("Client_Reports", saveClientReport()));
 $("#copyClientPlan").addEventListener("click", () => copyText(`${$("#clientPlanOutput").textContent}\n\nCLIENT REPLY\n${$("#clientReplyOutput").textContent}`));
 $("#copyRouter").addEventListener("click", () => copyText($("#routerOutput").textContent));
-$("#copySystemPlan").addEventListener("click", () => copyText($("#systemOutput").textContent));
+$("#copySystemPlan").addEventListener("click", () => copyText(blueprintToText()));
+$("#saveBlueprintToOps").addEventListener("click", saveBlueprintToOps);
+$("#pushBlueprintToSheets").addEventListener("click", () => pushToSheets("Service_Playbooks", latestBlueprint()));
 $("#copyTemplate").addEventListener("click", () => copyText($("#templateOutput").textContent));
 $("#saveSettings").addEventListener("click", () => {
   setSettings(collectSettings());
