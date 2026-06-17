@@ -128,6 +128,29 @@ const auditScorecard = [
   }
 ];
 
+const googleAuditForm = [
+  { section: "Business Basics", title: "Business name", type: "short", required: true, maps_to: "client_name" },
+  { section: "Business Basics", title: "Business type", type: "choice", required: true, options: ["Online store", "Clinic", "Salon", "Coach / consultant", "Local service business", "Restaurant / cafe", "Real estate", "Other small business"], maps_to: "business_type" },
+  { section: "Business Basics", title: "Main goal", type: "paragraph", required: true, maps_to: "goal" },
+  { section: "Business Basics", title: "Current setup", type: "paragraph", required: true, maps_to: "setup" },
+  { section: "Problem", title: "Main problem", type: "paragraph", required: true, maps_to: "problem" },
+  { section: "Assets", title: "Has Facebook page", type: "choice", required: true, options: ["Yes", "No", "Not sure"], score_area: "clarity" },
+  { section: "Assets", title: "Has website", type: "choice", required: true, options: ["Yes", "No", "Bad/needs work"], score_area: "website" },
+  { section: "Assets", title: "Has Google Sheet / CRM", type: "choice", required: true, options: ["Yes", "No", "Basic sheet only"], score_area: "followup" },
+  { section: "Page Audit", title: "Can customers understand your offer in 5 seconds?", type: "choice", required: true, options: ["Yes", "No", "Not sure"], score_area: "clarity" },
+  { section: "Page Audit", title: "Do you have clear reviews/photos/proof?", type: "choice", required: true, options: ["Yes", "No", "Some"], score_area: "trust" },
+  { section: "Content", title: "Content consistency", type: "choice", required: true, options: ["Consistent", "Random", "Rarely post", "No content"], score_area: "content" },
+  { section: "Sales Flow", title: "Follow-up system", type: "choice", required: true, options: ["CRM / Sheet", "WhatsApp only", "Memory only", "No follow-up"], score_area: "followup" },
+  { section: "Sales Flow", title: "Tracks leads", type: "choice", required: true, options: ["Yes", "No", "Sometimes"], score_area: "followup" },
+  { section: "Sales Flow", title: "Tracks orders/payments", type: "choice", required: true, options: ["Yes", "No", "Sometimes", "Not applicable"], score_area: "orders" },
+  { section: "Automation", title: "Manual repetitive work", type: "choice", required: true, options: ["Low", "Medium", "High"], score_area: "manual" },
+  { section: "Technical", title: "Technical issues", type: "choice", required: true, options: ["No", "Website/domain/email issue", "Not sure"], score_area: "technical" },
+  { section: "Sales", title: "Monthly budget level", type: "choice", required: true, options: ["Low", "Medium", "High", "Not sure"], maps_to: "budget" },
+  { section: "Sales", title: "Urgency", type: "choice", required: true, options: ["Today", "This week", "This month", "No deadline"], maps_to: "urgency" },
+  { section: "Sales", title: "Best contact method", type: "choice", required: true, options: ["WhatsApp", "Phone", "Email", "Messenger"], maps_to: "contact_method" },
+  { section: "Sales", title: "Page/website link", type: "short", required: false, maps_to: "link" }
+];
+
 const issueSignals = [
   { id: "weak_page", label: "Weak or unclear Facebook page", keywords: ["page", "facebook", "bio", "cover", "profile", "صفحة", "فيسبوك", "بايو"] },
   { id: "low_sales", label: "Messages but low sales", keywords: ["sales", "بيع", "مبيعات", "واتساب", "message", "رسائل"] },
@@ -437,6 +460,7 @@ function renderStaticSections() {
   $("#issueChecks").innerHTML = issueSignals.map((issue) => `<label class="check-row"><input type="checkbox" value="${issue.id}" /> <span>${issue.label}</span></label>`).join("");
   $("#serviceCards").innerHTML = services.map(([title, items]) => `<article class="surface service-card"><h3>${title}</h3><ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul></article>`).join("");
   $("#liveChecklist").innerHTML = liveChecklistItems.map((item) => `<label class="check-row"><input type="checkbox" /> <span>${item}</span></label>`).join("");
+  renderFormIntake();
   renderCaseList();
 }
 
@@ -645,6 +669,167 @@ KYAN - من اللخبطة للنظام، ومن النظام للنمو.`;
     reply,
     created_at: new Date().toISOString()
   };
+}
+
+function renderFormIntake() {
+  const grouped = googleAuditForm.reduce((acc, question) => {
+    acc[question.section] = acc[question.section] || [];
+    acc[question.section].push(question);
+    return acc;
+  }, {});
+  $("#formQuestionList").innerHTML = Object.entries(grouped).map(([section, questions]) => `<div class="ops-item">
+    <div class="ops-item-title">${section}</div>
+    ${questions.map((question) => `<div><b>${question.title}</b><div class="ops-meta"><span>${question.type}</span><span>${question.required ? "Required" : "Optional"}</span>${question.score_area ? `<span>Scores: ${question.score_area}</span>` : ""}</div></div>`).join("")}
+  </div>`).join("");
+  $("#formSchemaOutput").textContent = JSON.stringify(googleAuditForm, null, 2);
+}
+
+function parseFormResponse(raw) {
+  const text = raw.trim();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return text.split(/\n+/).reduce((acc, line) => {
+      const separator = line.includes(":") ? ":" : line.includes("=") ? "=" : null;
+      if (!separator) return acc;
+      const [key, ...rest] = line.split(separator);
+      acc[key.trim()] = rest.join(separator).trim();
+      return acc;
+    }, {});
+  }
+}
+
+function valueIncludes(value, terms) {
+  return terms.some((term) => String(value || "").toLowerCase().includes(term.toLowerCase()));
+}
+
+function scoreFromFormAnswer(question, value) {
+  if (!question.score_area) return null;
+  if (valueIncludes(value, ["no", "not sure", "memory only", "no follow-up", "no content", "rarely", "bad/needs work"])) return 5;
+  if (valueIncludes(value, ["random", "whatsapp only", "sometimes", "basic", "high", "website/domain/email issue"])) return 4;
+  if (valueIncludes(value, ["some", "medium", "not applicable"])) return 3;
+  if (valueIncludes(value, ["yes", "consistent", "crm", "sheet", "low"])) return 1;
+  return 3;
+}
+
+function scoresFromFormResponse(response) {
+  const scores = auditScorecard.map((area) => ({ ...area, score: 0, evidence: [] }));
+  googleAuditForm.forEach((question) => {
+    const value = response[question.title];
+    const score = scoreFromFormAnswer(question, value);
+    if (score === null) return;
+    const target = scores.find((item) => item.id === question.score_area);
+    if (!target) return;
+    target.score = Math.max(target.score, score);
+    target.evidence.push(`${question.title}: ${value || "Missing"}`);
+  });
+
+  const textBlob = Object.values(response).join(" ");
+  if (valueIncludes(textBlob, ["sales", "mبيعات", "واتساب", "messages"])) {
+    scores.find((item) => item.id === "followup").score = Math.max(scores.find((item) => item.id === "followup").score, 3);
+  }
+  if (valueIncludes(textBlob, ["content is random", "random content", "محتوى"])) {
+    scores.find((item) => item.id === "content").score = Math.max(scores.find((item) => item.id === "content").score, 4);
+  }
+  return scores;
+}
+
+function buildPathFromFormResponse(response) {
+  const scores = scoresFromFormResponse(response);
+  const ranked = [...scores].sort((a, b) => b.score - a.score);
+  const needsWork = ranked.filter((item) => item.score >= 3);
+  const top = ranked[0];
+  const path = servicePathFromScores(scores);
+  const firstPaid = path.find((item) => item !== "Free Business Audit") || "Facebook Page Setup";
+  const firstService = serviceKnowledge[firstPaid] || serviceKnowledge["Facebook Page Setup"];
+  const client = response["Business name"] || "Form Client";
+  const type = response["Business type"] || "Unknown";
+  const goal = response["Main goal"] || response["Main problem"] || "Needs audit";
+  const setup = response["Current setup"] || "Not provided";
+
+  const output = `GOOGLE FORM AUDIT RESULT
+Client: ${client}
+Business type: ${type}
+Budget: ${response["Monthly budget level"] || response["Budget level"] || "Unknown"}
+Urgency: ${response["Urgency"] || "Unknown"}
+Link: ${response["Page/website link"] || "Not provided"}
+
+CLIENT GOAL
+${goal}
+
+CURRENT SETUP
+${setup}
+
+MAIN BOTTLENECK
+${top.label} (${top.score}/5 - ${severityLabel(top.score)})
+
+EVIDENCE
+${needsWork.map((item) => `- ${item.label}: ${item.evidence.join("; ") || item.description}`).join("\n")}
+
+RECOMMENDED PATH
+${path.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+FIRST PAID STEP
+${firstPaid}
+Goal: ${firstService.goal}
+
+DISCOVERY QUESTIONS
+${formatList(firstService.discovery)}
+
+DELIVERY TASKS
+${firstService.tasks.map((task) => `[ ] ${task}`).join("\n")}`;
+
+  const reply = `تمام، شكرًا إنك ملّيت الفورم.
+
+من إجاباتك واضح إن أكبر نقطة محتاجة تتظبط هي: ${top.label}.
+
+الترتيب المناسب ليك:
+${path.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+أول خطوة أرشحها: ${firstPaid}.
+هنبدأ بتشخيص واضح ونحدد أهم 5 إصلاحات قبل أي شغل عشوائي.
+
+KYAN - من اللخبطة للنظام، ومن النظام للنمو.`;
+
+  return {
+    caseData: {
+      name: client,
+      type,
+      request: goal,
+      assets: [setup],
+      budget: response["Monthly budget level"] || response["Budget level"] || "Unknown",
+      urgency: response["Urgency"] || "Unknown",
+      issues: needsWork.map((item) => item.id),
+      primary: firstPaid,
+      plan: output,
+      reply,
+      created_at: new Date().toISOString()
+    },
+    output,
+    reply
+  };
+}
+
+function parseFormResponseToPath(event) {
+  event.preventDefault();
+  const response = parseFormResponse($("#formResponseInput").value);
+  const result = buildPathFromFormResponse(response);
+  $("#formPathOutput").textContent = result.output;
+  $("#formReplyOutput").textContent = result.reply;
+
+  const cases = getCases();
+  cases.unshift(result.caseData);
+  setCases(cases.slice(0, 30));
+  renderCaseList();
+  showToast("Form response parsed and saved");
+}
+
+function formQuestionsText() {
+  return googleAuditForm.map((question, index) => `${index + 1}. ${question.title}
+Type: ${question.type}
+Required: ${question.required ? "Yes" : "No"}
+${question.options ? `Options: ${question.options.join(" | ")}` : ""}`).join("\n\n");
 }
 
 function renderTemplate() {
@@ -1392,6 +1577,7 @@ $("#auditBrainForm").addEventListener("submit", (event) => {
   determineAuditPath();
 });
 
+$("#formResponseForm").addEventListener("submit", parseFormResponseToPath);
 $("#clientForm").addEventListener("submit", (event) => {
   event.preventDefault();
   buildClientPlan();
@@ -1423,6 +1609,8 @@ $("#copyBrain").addEventListener("click", () => copyText(templates["AI Agent Sys
 $("#copyDraft").addEventListener("click", () => copyText($("#draftOutput").textContent));
 $("#copyAudit").addEventListener("click", () => copyText($("#auditOutput").textContent));
 $("#copyAuditBrain").addEventListener("click", () => copyText(`${$("#auditBrainOutput").textContent}\n\nCLIENT REPLY\n${$("#auditClientReplyOutput").textContent}`));
+$("#copyFormQuestions").addEventListener("click", () => copyText(formQuestionsText()));
+$("#copyFormSchema").addEventListener("click", () => copyText(JSON.stringify(googleAuditForm, null, 2)));
 $("#copyClientPlan").addEventListener("click", () => copyText(`${$("#clientPlanOutput").textContent}\n\nCLIENT REPLY\n${$("#clientReplyOutput").textContent}`));
 $("#copyRouter").addEventListener("click", () => copyText($("#routerOutput").textContent));
 $("#copySystemPlan").addEventListener("click", () => copyText($("#systemOutput").textContent));

@@ -62,9 +62,29 @@ Use Daily Ops as the morning workspace:
 1. Add today tasks.
 2. Add new leads from WhatsApp/Facebook.
 3. Add content ideas from real client problems.
-4. Use Audit Brain to decide each client path.
-5. Use Client Desk for replies and delivery tasks.
-6. Export backup weekly until Sheets sync is connected.
+4. Send the Google Form audit from `google_forms/`.
+5. Use Form Intake to convert responses into client paths.
+6. Use Audit Brain to decide each client path.
+7. Use Client Desk for replies and delivery tasks.
+8. Export backup weekly until Sheets sync is connected.
+
+## Google Form Audit
+
+Use `google_forms/create_kyan_audit_form.gs` in Apps Script to generate the form and response Sheet.
+
+The form is designed to collect enough information for KYAN Brain to score:
+
+- Clarity
+- Trust
+- Content
+- CTA
+- Follow-up
+- Orders/payments
+- Manual work
+- Website need
+- Technical risk
+
+Paste a response JSON/key-value block into KYAN Brain > Form Intake to produce the recommended path.
 
 ## Sheets Sync
 

@@ -6,6 +6,7 @@ Open `index.html` in a browser to use:
 
 - Brand Brain source of truth
 - Daily Ops for tasks, lead pipeline, and content queue
+- Form Intake for Google Form audit responses
 - Client Desk for diagnosing client requests
 - Audit Brain for scoring a client and choosing the service path
 - Request Router for turning messy messages into service paths
@@ -21,16 +22,19 @@ Portable assets:
 - `ai_agent_system_prompt.md` for OpenAI/AI Agent nodes
 - `sheets/` CSV files for building the KYAN_Content_Engine workbook
 - `functions/api/` Cloudflare Pages Functions for live AI and Sheets proxy
+- `google_forms/` Apps Script and question schema to create the client audit form
 - `DEPLOYMENT.md` for Cloudflare setup and environment variables
 
 Suggested workflow:
 
 1. Open Daily Ops every morning.
 2. Add tasks, active leads, and content ideas.
-3. Paste client requests into Client Desk or Audit Brain.
-4. Save the case locally in the dashboard.
-5. Use Systems Builder for the actual delivery blueprint.
-6. Use Templates for proposals, requirements forms, reports, and handover.
-7. Use Settings / API after deployment to connect AI, Sheets, and n8n.
+3. Send the Google Form audit to new leads.
+4. Paste form responses into Form Intake to create the path.
+5. Use Audit Brain or Client Desk for deeper diagnosis.
+6. Save the case locally in the dashboard.
+7. Use Systems Builder for the actual delivery blueprint.
+8. Use Templates for proposals, requirements forms, reports, and handover.
+9. Use Settings / API after deployment to connect AI, Sheets, and n8n.
 
 No setup, server, or internet connection is required.

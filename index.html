@@ -20,6 +20,7 @@
         <nav class="nav-list">
           <button class="nav-item active" data-section="command">Command</button>
           <button class="nav-item" data-section="dailyOps">Daily Ops</button>
+          <button class="nav-item" data-section="formIntake">Form Intake</button>
           <button class="nav-item" data-section="auditBrain">Audit Brain</button>
           <button class="nav-item" data-section="client">Client Desk</button>
           <button class="nav-item" data-section="router">Request Router</button>
@@ -228,6 +229,67 @@
             <h3>Daily operating snapshot</h3>
             <pre id="dailySnapshotOutput"></pre>
           </article>
+        </section>
+
+        <section id="formIntake" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Google Forms audit</p>
+              <h2>Form Intake Brain</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="copyFormQuestions">Copy Form Questions</button>
+              <button class="ghost-button" id="copyFormSchema">Copy Schema</button>
+            </div>
+          </div>
+
+          <div class="two-column">
+            <article class="surface">
+              <h3>Google Form structure</h3>
+              <div id="formQuestionList" class="ops-list"></div>
+            </article>
+            <article class="surface output-panel">
+              <h3>Form schema</h3>
+              <pre id="formSchemaOutput"></pre>
+            </article>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="formResponseForm">
+              <h3>Parse client response</h3>
+              <label>
+                Paste response JSON or key-value text
+                <textarea id="formResponseInput">{
+  "Business name": "Demo Store",
+  "Business type": "Online store",
+  "Main goal": "Increase sales from WhatsApp leads",
+  "Current setup": "Facebook page + WhatsApp. No CRM. No website. Content is random.",
+  "Main problem": "Messages come but follow-up is messy and sales are low",
+  "Has Facebook page": "Yes",
+  "Has website": "No",
+  "Tracks leads": "No",
+  "Tracks orders/payments": "No",
+  "Content consistency": "Random",
+  "Follow-up system": "WhatsApp only",
+  "Manual repetitive work": "High",
+  "Technical issues": "No",
+  "Budget level": "Medium",
+  "Urgency": "This week"
+}</textarea>
+              </label>
+              <button type="submit" class="primary-button">Create Path From Form</button>
+            </form>
+            <div class="stacked-output">
+              <article class="surface output-panel">
+                <h3>Parsed path</h3>
+                <pre id="formPathOutput"></pre>
+              </article>
+              <article class="surface output-panel">
+                <h3>Reply to client</h3>
+                <pre id="formReplyOutput"></pre>
+              </article>
+            </div>
+          </div>
         </section>
 
         <section id="auditBrain" class="panel">

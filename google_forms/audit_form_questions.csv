@@ -1,0 +1,21 @@
+section,title,type,required,options,maps_to,score_area
+Business Basics,Business name,short,TRUE,,client_name,
+Business Basics,Business type,choice,TRUE,"Online store|Clinic|Salon|Coach / consultant|Local service business|Restaurant / cafe|Real estate|Other small business",business_type,
+Business Basics,Main goal,paragraph,TRUE,,goal,
+Business Basics,Current setup,paragraph,TRUE,,setup,
+Problem,Main problem,paragraph,TRUE,,problem,
+Assets,Has Facebook page,choice,TRUE,"Yes|No|Not sure",,clarity
+Assets,Has website,choice,TRUE,"Yes|No|Bad/needs work",,website
+Assets,Has Google Sheet / CRM,choice,TRUE,"Yes|No|Basic sheet only",,followup
+Page Audit,Can customers understand your offer in 5 seconds?,choice,TRUE,"Yes|No|Not sure",,clarity
+Page Audit,Do you have clear reviews/photos/proof?,choice,TRUE,"Yes|No|Some",,trust
+Content,Content consistency,choice,TRUE,"Consistent|Random|Rarely post|No content",,content
+Sales Flow,Follow-up system,choice,TRUE,"CRM / Sheet|WhatsApp only|Memory only|No follow-up",,followup
+Sales Flow,Tracks leads,choice,TRUE,"Yes|No|Sometimes",,followup
+Sales Flow,Tracks orders/payments,choice,TRUE,"Yes|No|Sometimes|Not applicable",,orders
+Automation,Manual repetitive work,choice,TRUE,"Low|Medium|High",,manual
+Technical,Technical issues,choice,TRUE,"No|Website/domain/email issue|Not sure",,technical
+Sales,Monthly budget level,choice,TRUE,"Low|Medium|High|Not sure",budget,
+Sales,Urgency,choice,TRUE,"Today|This week|This month|No deadline",urgency,
+Sales,Best contact method,choice,TRUE,"WhatsApp|Phone|Email|Messenger",contact_method,
+Sales,Page/website link,short,FALSE,,link,
