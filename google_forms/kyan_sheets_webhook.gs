@@ -5,6 +5,7 @@ const KYAN_ALLOWED_TABS = [
   'Form_Responses',
   'Content_Ideas',
   'Draft_Posts',
+  'Service_Playbooks',
   'Performance',
   'Learning_Log'
 ];
@@ -15,6 +16,7 @@ function doPost(e) {
     const sheetId = extractSheetId(body.sheet_id || body.sheet_url);
     const tab = body.tab;
     const payload = body.payload || {};
+    const action = body.action || 'create';
 
     if (!sheetId) return jsonResponse({ ok: false, error: 'Missing sheet_id' }, 400);
     if (!tab) return jsonResponse({ ok: false, error: 'Missing tab' }, 400);
@@ -24,6 +26,16 @@ function doPost(e) {
 
     const spreadsheet = SpreadsheetApp.openById(sheetId);
     const sheet = getOrCreateSheet(spreadsheet, tab);
+
+    if (action === 'list') {
+      return jsonResponse({
+        ok: true,
+        tab: tab,
+        rows: readRows(sheet, Number(body.limit || 25)),
+        time: new Date().toISOString()
+      });
+    }
+
     const flat = flattenObject(payload);
     appendObject(sheet, flat);
 
@@ -36,6 +48,24 @@ function doPost(e) {
   } catch (error) {
     return jsonResponse({ ok: false, error: error.message }, 500);
   }
+}
+
+function readRows(sheet, limit) {
+  const lastRow = sheet.getLastRow();
+  const lastColumn = sheet.getLastColumn();
+  if (lastRow < 2 || lastColumn < 1) return [];
+
+  const headers = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+  const count = Math.min(Math.max(limit || 25, 1), lastRow - 1);
+  const start = Math.max(2, lastRow - count + 1);
+  const values = sheet.getRange(start, 1, count, lastColumn).getValues();
+  return values.reverse().map(function(row) {
+    var item = {};
+    headers.forEach(function(header, index) {
+      if (header) item[header] = row[index];
+    });
+    return item;
+  });
 }
 
 function getOrCreateSheet(spreadsheet, tab) {

@@ -38,9 +38,14 @@ CUSTOM_AI_API_KEY=...
 SHEETS_WEBHOOK_URL=https://your-n8n-or-apps-script-webhook
 SHEETS_WEBHOOK_TOKEN=optional-shared-secret
 N8N_WEBHOOK_URL=https://your-n8n-webhook
+
+ACCESS_CODE=choose-a-private-login-code
+ACCESS_SECRET=choose-a-long-random-secret
 ```
 
 Never paste API keys into the browser Settings screen.
+
+If `ACCESS_CODE` is set, the live Cloudflare Worker protects the app with an access page before serving KYAN Brain. Keep `ACCESS_SECRET` private; it is used to create the login session cookie.
 
 ## Deploy Steps
 
@@ -87,10 +92,10 @@ The form is designed to collect enough information for KYAN Brain to score:
 
 Paste a response JSON/key-value block into KYAN Brain > Form Intake to produce the recommended path.
 
-## Sheets Sync
+## Sheets Database
 
-The included `/api/sheets` function is a safe proxy.
-For v1, connect it to n8n or Google Apps Script using `SHEETS_WEBHOOK_URL`.
+The included `/api/sheets` and `/api/db` functions are safe proxies.
+`/api/sheets` pushes records. `/api/db` can create and list recent rows when the included Apps Script webhook is updated.
 
 Fastest option:
 
@@ -106,7 +111,7 @@ SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/...
 ```
 
 7. In KYAN Brain > Settings / API, add the Google Sheet ID.
-8. Use Push Case, Push Audit, or Push Report.
+8. Use Database > Load Records, Save To Database, Push Case, Push Audit, Push Report, or Learning Brain > Save Lesson.
 
 You can paste the full Google Sheet URL into KYAN Brain. The app and Apps Script will extract the Sheet ID automatically.
 
@@ -120,7 +125,40 @@ The browser sends:
 }
 ```
 
-Your webhook writes that payload to the target Google Sheet.
+Your webhook writes that payload to the target Google Sheet. For database reads, the app sends:
+
+```json
+{
+  "action": "list",
+  "sheet_id": "...",
+  "tab": "Client_Cases",
+  "limit": 25
+}
+```
+
+Update the Apps Script whenever `google_forms/kyan_sheets_webhook.gs` changes.
+
+Recommended tabs:
+
+- `Client_Cases`
+- `Client_Reports`
+- `Content_Ideas`
+- `Service_Playbooks`
+- `Performance`
+- `Learning_Log`
+
+## Learning Brain
+
+Use Learning Brain after audits, client replies, content posts, and delivery work:
+
+1. Record what happened.
+2. Record the result or signal.
+3. Write the lesson.
+4. Generate a plain-text improvement memo.
+5. Save it to `Learning_Log`.
+6. Use Ask AI To Improve after an AI provider key is configured.
+
+The AI agent is intentionally human-in-the-loop: it advises the next action, but KYAN still approves and executes.
 
 ## Client Report Generator
 

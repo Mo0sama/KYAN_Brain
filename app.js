@@ -561,6 +561,8 @@ KYAN - من اللخبطة للنظام، ومن النظام للنمو.`
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
+const dbTabs = ["Client_Cases", "Client_Reports", "Content_Ideas", "Performance", "Learning_Log", "Service_Playbooks"];
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -590,6 +592,33 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 1600);
+}
+
+async function checkAccessSession() {
+  try {
+    const response = await fetch("/api/session");
+    const data = await response.json();
+    if (data.required && !data.authenticated) {
+      $("#accessGate").classList.remove("hidden");
+    }
+  } catch (error) {
+    $("#accessGate").classList.add("hidden");
+  }
+}
+
+async function submitAccess(event) {
+  event.preventDefault();
+  $("#accessMessage").textContent = "Checking access...";
+  try {
+    const data = await requestJson("/api/login", { code: $("#accessCode").value });
+    if (data.ok) {
+      $("#accessGate").classList.add("hidden");
+      $("#accessMessage").textContent = "";
+      showToast("Access granted");
+    }
+  } catch (error) {
+    $("#accessMessage").textContent = "Access denied. Check the code in Cloudflare.";
+  }
 }
 
 async function copyText(text) {
@@ -2186,6 +2215,81 @@ async function requestJson(url, payload) {
   return data;
 }
 
+function localDbRecords(tab) {
+  try {
+    return JSON.parse(localStorage.getItem(`kyan_db_${tab}`) || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+function setLocalDbRecords(tab, records) {
+  localStorage.setItem(`kyan_db_${tab}`, JSON.stringify(records.slice(0, 100)));
+}
+
+async function dbRequest(action, tab, payload = {}) {
+  const settings = collectSettings();
+  setSettings(settings);
+  const body = {
+    action,
+    sheet_id: extractGoogleSheetId(settings.sheetId),
+    sheet_url: settings.sheetId,
+    tab,
+    payload
+  };
+  try {
+    return await requestJson("/api/db", body);
+  } catch (error) {
+    if (action === "list") {
+      return { ok: true, mode: "local", rows: localDbRecords(tab), note: error.message };
+    }
+    const records = localDbRecords(tab);
+    const record = { received_at: new Date().toISOString(), ...payload };
+    records.unshift(record);
+    setLocalDbRecords(tab, records);
+    return { ok: true, mode: "local", row: record, note: error.message };
+  }
+}
+
+function renderDatabaseRows(tab, rows, note = "") {
+  const recent = (rows || []).slice(0, 12);
+  if (!recent.length) {
+    renderHumanOutput("#databaseOutput", [
+      { title: "No records yet", html: textBlockHtml(`Table: ${tab}\nSave the first record or connect Google Sheets in Settings.`) }
+    ]);
+    return;
+  }
+  renderHumanOutput("#databaseOutput", [
+    { title: `Recent ${tab}`, html: recent.map((row) => `<article class="mini-card">
+      <h5>${escapeHtml(row.title || row.client_name || row.name || row.service || "Record")}</h5>
+      <p>${escapeHtml(row.notes || row.request || row.report || row.lesson || row.main_goal || "")}</p>
+      <small>${escapeHtml(row.received_at || row.created_at || "")}</small>
+    </article>`).join("") },
+    ...(note ? [{ title: "Connection note", html: textBlockHtml(note) }] : [])
+  ]);
+}
+
+async function loadDatabaseRecords() {
+  const tab = $("#databaseTab").value;
+  $("#databaseOutput").innerHTML = `<div class="answer-section"><h4>Loading</h4><div class="copy-block">Reading ${escapeHtml(tab)}...</div></div>`;
+  const data = await dbRequest("list", tab);
+  renderDatabaseRows(tab, data.rows || [], data.note || "");
+}
+
+async function saveDatabaseRecord(event) {
+  if (event) event.preventDefault();
+  const tab = $("#databaseTab").value;
+  const payload = {
+    record_id: uid("db"),
+    title: $("#databaseTitle").value.trim(),
+    notes: $("#databaseNotes").value.trim(),
+    created_at: new Date().toISOString()
+  };
+  const data = await dbRequest("create", tab, payload);
+  showToast(data.mode === "local" ? "Saved locally" : "Saved to database");
+  await loadDatabaseRecords();
+}
+
 function latestCasePayload() {
   const cases = getCases();
   if (cases[0]) return cases[0];
@@ -2299,6 +2403,138 @@ KYAN - من اللخبطة للنظام، ومن النظام للنمو.`;
     source_case: caseData,
     report
   };
+}
+
+function getLearningLogs() {
+  try {
+    return JSON.parse(localStorage.getItem("kyan_learning_logs") || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+function setLearningLogs(logs) {
+  localStorage.setItem("kyan_learning_logs", JSON.stringify(logs.slice(0, 100)));
+}
+
+function buildLearningMemo(event) {
+  if (event) event.preventDefault();
+  const type = $("#learningType").value;
+  const observation = $("#learningObservation").value.trim();
+  const result = $("#learningResult").value.trim();
+  const lesson = $("#learningLesson").value.trim();
+  const cases = getCases().slice(0, 3);
+  const reports = getReports().slice(0, 3);
+  const ops = normalizedOps();
+  const memo = {
+    learning_id: uid("learn"),
+    created_at: new Date().toISOString(),
+    type,
+    observation,
+    result,
+    lesson,
+    recommendation: inferNextImprovement({ observation, result, lesson, cases, reports, ops }),
+    next_actions: [
+      "Apply this lesson to the next audit response.",
+      "Update the recommended service path if the same signal appears again.",
+      "Save the lesson to Google Sheets so the AI context grows over time."
+    ]
+  };
+  renderLearningMemo(memo);
+  localStorage.setItem("kyan_last_learning_memo", JSON.stringify(memo));
+  return memo;
+}
+
+function inferNextImprovement({ observation, result, lesson }) {
+  const text = `${observation} ${result} ${lesson}`.toLowerCase();
+  if (text.includes("automation") && (text.includes("tracking") || text.includes("follow"))) {
+    return "Position Google Sheets CRM before n8n automation when the client has no clear lead tracking.";
+  }
+  if (text.includes("content") || text.includes("post")) {
+    return "Turn the strongest client problem into a Content Flywheel pack, then measure replies and saves.";
+  }
+  if (text.includes("website") || text.includes("landing")) {
+    return "Recommend a landing page only after the offer, proof, and CTA are clear.";
+  }
+  return "Use this lesson as a decision rule in the next client audit and report.";
+}
+
+function renderLearningMemo(memo) {
+  renderHumanOutput("#learningOutput", [
+    { title: "What Happened", html: textBlockHtml(`${memo.type}\n${memo.observation}`) },
+    { title: "Result / Signal", html: textBlockHtml(memo.result) },
+    { title: "Lesson", html: textBlockHtml(memo.lesson) },
+    { title: "How KYAN Should Improve", html: textBlockHtml(memo.recommendation) },
+    { title: "Next Actions", html: listHtml(memo.next_actions) }
+  ]);
+}
+
+function latestLearningMemo() {
+  try {
+    return JSON.parse(localStorage.getItem("kyan_last_learning_memo") || "null") || buildLearningMemo();
+  } catch (error) {
+    return buildLearningMemo();
+  }
+}
+
+function learningMemoToText(memo = latestLearningMemo()) {
+  return `KYAN LEARNING MEMO
+
+TYPE
+${memo.type}
+
+WHAT HAPPENED
+${memo.observation}
+
+RESULT / SIGNAL
+${memo.result}
+
+LESSON
+${memo.lesson}
+
+HOW KYAN SHOULD IMPROVE
+${memo.recommendation}
+
+NEXT ACTIONS
+${formatList(memo.next_actions || [])}`;
+}
+
+async function saveLearningMemo() {
+  const memo = latestLearningMemo();
+  const logs = getLearningLogs();
+  logs.unshift(memo);
+  setLearningLogs(logs);
+  await dbRequest("create", "Learning_Log", memo);
+  showToast("Lesson saved");
+}
+
+async function askLearningAi() {
+  const settings = collectSettings();
+  setSettings(settings);
+  const memo = latestLearningMemo();
+  const payload = {
+    provider: settings.apiProvider,
+    model: settings.apiModel,
+    system: "You are KYAN's operating advisor. Reply in plain text only. No JSON.",
+    input: `Improve KYAN's next action based on this learning memo. Give: decision rule, client message, internal action, content angle, and what to track next.\n\n${learningMemoToText(memo)}`,
+    context: {
+      latest_cases: getCases().slice(0, 5),
+      latest_reports: getReports().slice(0, 3),
+      latest_blueprint: latestBlueprint(),
+      latest_flywheel: latestFlywheelPack()
+    }
+  };
+  renderHumanOutput("#learningOutput", [{ title: "AI Advisor", html: textBlockHtml("Asking AI for improvement advice...") }]);
+  try {
+    const data = await requestJson(settings.aiEndpoint, payload);
+    renderHumanOutput("#learningOutput", [
+      { title: "AI Improvement Advice", html: textBlockHtml(data.output || "No text returned.") },
+      { title: "Saved Lesson", html: textBlockHtml(learningMemoToText(memo)) }
+    ]);
+  } catch (error) {
+    renderLearningMemo(memo);
+    showToast("AI unavailable. Local memo kept.");
+  }
 }
 
 function saveClientReport() {
@@ -2423,6 +2659,7 @@ function exportBackupFile() {
     ops: normalizedOps(),
     last_flywheel_pack: latestFlywheelPack(),
     last_blueprint: latestBlueprint(),
+    learning_logs: getLearningLogs(),
     brain,
     audit_scorecard: auditScorecard,
     service_knowledge: serviceKnowledge
@@ -2499,6 +2736,14 @@ $("#settingsForm").addEventListener("submit", (event) => {
   showToast("Settings saved");
 });
 
+$("#accessForm").addEventListener("submit", submitAccess);
+$("#databaseForm").addEventListener("submit", saveDatabaseRecord);
+$("#loadDatabase").addEventListener("click", loadDatabaseRecords);
+$("#saveQuickRecord").addEventListener("click", saveDatabaseRecord);
+$("#learningForm").addEventListener("submit", buildLearningMemo);
+$("#copyLearningMemo").addEventListener("click", () => copyText(learningMemoToText()));
+$("#saveLearningLog").addEventListener("click", saveLearningMemo);
+$("#askLearningAi").addEventListener("click", askLearningAi);
 $("#opsTaskForm").addEventListener("submit", addOpsTask);
 $("#opsLeadForm").addEventListener("submit", addOpsLead);
 $("#opsContentForm").addEventListener("submit", addOpsContent);
@@ -2570,5 +2815,7 @@ buildSystemPlan();
 renderTemplate();
 buildAuditPlaybook();
 generateClientReport();
+buildLearningMemo();
 loadSettings();
 renderOps();
+checkAccessSession();

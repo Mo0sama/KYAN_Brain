@@ -23,6 +23,49 @@ body {
   font-family: Inter, "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.access-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #102326, #0a6872);
+}
+
+.access-card {
+  display: grid;
+  gap: 14px;
+  width: min(440px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.access-card .brand-mark {
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.access-card h1,
+.access-card p {
+  margin: 0;
+}
+
+.access-card label {
+  color: var(--white);
+}
+
+.access-card input {
+  color: var(--charcoal);
+}
+
 button,
 input,
 select,
@@ -247,7 +290,8 @@ textarea {
 
 .two-column,
 .generator-grid,
-.client-grid {
+.client-grid,
+.command-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
   gap: 18px;
@@ -530,6 +574,30 @@ select[multiple] {
   line-height: 1.45;
 }
 
+.action-card {
+  display: grid;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.action-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 10px 24px rgba(8, 127, 140, 0.12);
+}
+
+.action-card span {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.action-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .ops-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -719,6 +787,7 @@ select[multiple] {
   .two-column,
   .generator-grid,
   .client-grid,
+  .command-grid,
   .ops-grid,
   .ops-board,
   .workflow-strip {

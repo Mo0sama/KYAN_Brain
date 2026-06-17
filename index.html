@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div id="accessGate" class="access-gate hidden">
+      <form id="accessForm" class="access-card">
+        <div class="brand-mark">K</div>
+        <p class="eyebrow">Private workspace</p>
+        <h1>KYAN Brain Access</h1>
+        <p>Enter your workspace access code to open the operating system.</p>
+        <label>
+          Access code
+          <input id="accessCode" type="password" autocomplete="current-password" placeholder="Enter access code" />
+        </label>
+        <button class="primary-button" type="submit">Unlock KYAN Brain</button>
+        <small id="accessMessage"></small>
+      </form>
+    </div>
+
     <div class="app-shell">
       <aside class="sidebar" aria-label="KYAN Brain navigation">
         <div class="brand-lockup">
@@ -22,32 +37,34 @@
             <p class="nav-group-title">Operate</p>
             <button class="nav-item active" data-section="command"><span>01</span> Command Center</button>
             <button class="nav-item" data-section="dailyOps"><span>02</span> Daily Ops</button>
+            <button class="nav-item" data-section="database"><span>03</span> Database</button>
           </div>
 
           <div class="nav-group">
             <p class="nav-group-title">Client Path</p>
-            <button class="nav-item" data-section="formIntake"><span>03</span> Intake Forms</button>
-            <button class="nav-item" data-section="router"><span>04</span> Request Router</button>
-            <button class="nav-item" data-section="auditBrain"><span>05</span> Audit Brain</button>
-            <button class="nav-item" data-section="client"><span>06</span> Client Desk</button>
-            <button class="nav-item" data-section="reports"><span>07</span> Reports</button>
+            <button class="nav-item" data-section="formIntake"><span>04</span> Intake Forms</button>
+            <button class="nav-item" data-section="router"><span>05</span> Request Router</button>
+            <button class="nav-item" data-section="auditBrain"><span>06</span> Audit Brain</button>
+            <button class="nav-item" data-section="client"><span>07</span> Client Desk</button>
+            <button class="nav-item" data-section="reports"><span>08</span> Reports</button>
           </div>
 
           <div class="nav-group">
             <p class="nav-group-title">Growth</p>
-            <button class="nav-item" data-section="flywheel"><span>08</span> Content Flywheel</button>
-            <button class="nav-item" data-section="content"><span>09</span> Draft Builder</button>
-            <button class="nav-item" data-section="brand"><span>10</span> Brand Brain</button>
+            <button class="nav-item" data-section="learning"><span>09</span> Learning Brain</button>
+            <button class="nav-item" data-section="flywheel"><span>10</span> Content Flywheel</button>
+            <button class="nav-item" data-section="content"><span>11</span> Draft Builder</button>
+            <button class="nav-item" data-section="brand"><span>12</span> Brand Brain</button>
           </div>
 
           <div class="nav-group">
             <p class="nav-group-title">Build & Library</p>
-            <button class="nav-item" data-section="auditPlaybook"><span>11</span> Audit Playbook</button>
-            <button class="nav-item" data-section="audit"><span>12</span> Audit Builder</button>
-            <button class="nav-item" data-section="systems"><span>13</span> Service Blueprint</button>
-            <button class="nav-item" data-section="delivery"><span>14</span> Service Delivery</button>
-            <button class="nav-item" data-section="templates"><span>15</span> Templates</button>
-            <button class="nav-item" data-section="settings"><span>16</span> Settings / API</button>
+            <button class="nav-item" data-section="auditPlaybook"><span>13</span> Audit Playbook</button>
+            <button class="nav-item" data-section="audit"><span>14</span> Audit Builder</button>
+            <button class="nav-item" data-section="systems"><span>15</span> Service Blueprint</button>
+            <button class="nav-item" data-section="delivery"><span>16</span> Service Delivery</button>
+            <button class="nav-item" data-section="templates"><span>17</span> Templates</button>
+            <button class="nav-item" data-section="settings"><span>18</span> Settings / API</button>
           </div>
         </nav>
 
@@ -91,7 +108,7 @@
               <span class="status-pill">Start here when a client appears</span>
             </div>
             <div class="workflow-strip">
-              <button class="workflow-step" data-jump="formIntake">
+            <button class="workflow-step" data-jump="formIntake">
                 <span>1</span>
                 <strong>Collect Intake</strong>
                 <small>Google Form or pasted client answers</small>
@@ -119,6 +136,19 @@
             </div>
           </div>
 
+          <div class="command-grid">
+            <article class="surface action-card" data-jump="database">
+              <span>Database-first</span>
+              <h3>Use Google Sheets as the first real database</h3>
+              <p>Load client cases, reports, content, performance, and learning logs from one connected sheet.</p>
+            </article>
+            <article class="surface action-card" data-jump="learning">
+              <span>Always improving</span>
+              <h3>Record lessons and improve the next move</h3>
+              <p>Save what worked, what failed, and ask the AI agent for practical next actions in plain text.</p>
+            </article>
+          </div>
+
           <div class="two-column">
             <article class="surface">
               <h3>Today’s operating checklist</h3>
@@ -143,6 +173,115 @@
               <button class="ghost-button danger" id="clearCases">Clear Saved Cases</button>
             </div>
             <div id="caseList" class="case-list"></div>
+          </div>
+        </section>
+
+        <section id="database" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Live data layer</p>
+              <h2>KYAN Database</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="loadDatabase">Load Records</button>
+              <button class="ghost-button" id="saveQuickRecord">Save Quick Record</button>
+            </div>
+          </div>
+
+          <div class="generator-grid wide-output">
+            <form class="surface form-stack" id="databaseForm">
+              <h3>Google Sheets database</h3>
+              <label>
+                Table
+                <select id="databaseTab">
+                  <option>Client_Cases</option>
+                  <option>Client_Reports</option>
+                  <option>Content_Ideas</option>
+                  <option>Performance</option>
+                  <option>Learning_Log</option>
+                  <option>Service_Playbooks</option>
+                </select>
+              </label>
+              <label>
+                Client / title
+                <input id="databaseTitle" value="New client case" />
+              </label>
+              <label>
+                Notes
+                <textarea id="databaseNotes">Client needs audit, clear path, and next recommendation.</textarea>
+              </label>
+              <button type="submit" class="primary-button">Save To Database</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>Recent records</h3>
+              <div id="databaseOutput" class="human-output"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="learning" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Adaptive memory</p>
+              <h2>Learning Brain</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="copyLearningMemo">Copy Memo</button>
+              <button class="ghost-button" id="saveLearningLog">Save Lesson</button>
+              <button class="ghost-button" id="askLearningAi">Ask AI To Improve</button>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric-card">
+              <span>Memory source</span>
+              <strong>Cases + reports + content + lessons</strong>
+            </article>
+            <article class="metric-card">
+              <span>AI role</span>
+              <strong>Advisor, not autopilot</strong>
+            </article>
+            <article class="metric-card">
+              <span>Output style</span>
+              <strong>Plain usable text</strong>
+            </article>
+            <article class="metric-card">
+              <span>Rule</span>
+              <strong>Improve by evidence</strong>
+            </article>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="learningForm">
+              <h3>Record what happened</h3>
+              <label>
+                Activity type
+                <select id="learningType">
+                  <option>Audit</option>
+                  <option>Client reply</option>
+                  <option>Content post</option>
+                  <option>Delivery task</option>
+                  <option>Sales call</option>
+                </select>
+              </label>
+              <label>
+                What happened
+                <textarea id="learningObservation">A client asked for automation, but the real issue was missing lead tracking and follow-up.</textarea>
+              </label>
+              <label>
+                Result / signal
+                <textarea id="learningResult">Best next step is Google Sheets CRM before automation.</textarea>
+              </label>
+              <label>
+                Lesson
+                <textarea id="learningLesson">Do not sell automation first when the workflow is not organized.</textarea>
+              </label>
+              <button type="submit" class="primary-button">Generate Improvement Memo</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>Improvement memo</h3>
+              <div id="learningOutput" class="human-output"></div>
+            </article>
           </div>
         </section>
 
