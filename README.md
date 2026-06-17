@@ -23,6 +23,7 @@ Portable assets:
 - `sheets/` CSV files for building the KYAN_Content_Engine workbook
 - `functions/api/` Cloudflare Pages Functions for live AI and Sheets proxy
 - `google_forms/` Apps Script and question schema to create the client audit form
+- `google_forms/kyan_sheets_webhook.gs` to sync KYAN Brain data into Google Sheets
 - `AUDIT_PLAYBOOK.md` for step-by-step audit execution
 - `DEPLOYMENT.md` for Cloudflare setup and environment variables
 
@@ -36,6 +37,7 @@ Suggested workflow:
 6. Save the case locally in the dashboard.
 7. Use Systems Builder for the actual delivery blueprint.
 8. Use Templates for proposals, requirements forms, reports, and handover.
-9. Use Settings / API after deployment to connect AI, Sheets, and n8n.
+9. Use Reports to generate a client-ready audit report.
+10. Use Settings / API after deployment to connect AI, Sheets, and n8n.
 
 No setup, server, or internet connection is required.

@@ -92,6 +92,22 @@ Paste a response JSON/key-value block into KYAN Brain > Form Intake to produce t
 The included `/api/sheets` function is a safe proxy.
 For v1, connect it to n8n or Google Apps Script using `SHEETS_WEBHOOK_URL`.
 
+Fastest option:
+
+1. Create a Google Sheet.
+2. Open Extensions > Apps Script.
+3. Paste `google_forms/kyan_sheets_webhook.gs`.
+4. Deploy as Web App.
+5. Copy the Web App URL.
+6. In Cloudflare environment variables, set:
+
+```text
+SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/...
+```
+
+7. In KYAN Brain > Settings / API, add the Google Sheet ID.
+8. Use Push Case, Push Audit, or Push Report.
+
 The browser sends:
 
 ```json
@@ -103,3 +119,13 @@ The browser sends:
 ```
 
 Your webhook writes that payload to the target Google Sheet.
+
+## Client Report Generator
+
+Use Reports after an audit or form intake:
+
+1. Choose source: latest case, Audit Brain, Client Desk, or Form Intake.
+2. Choose package or keep Auto.
+3. Add timeline and price placeholder.
+4. Generate report.
+5. Copy, save, or push to Google Sheets.

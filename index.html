@@ -24,6 +24,7 @@
           <button class="nav-item" data-section="auditBrain">Audit Brain</button>
           <button class="nav-item" data-section="auditPlaybook">Audit Playbook</button>
           <button class="nav-item" data-section="client">Client Desk</button>
+          <button class="nav-item" data-section="reports">Reports</button>
           <button class="nav-item" data-section="router">Request Router</button>
           <button class="nav-item" data-section="brand">Brand Brain</button>
           <button class="nav-item" data-section="content">Content Engine</button>
@@ -469,6 +470,62 @@
                 <pre id="clientReplyOutput"></pre>
               </article>
             </div>
+          </div>
+        </section>
+
+        <section id="reports" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Client deliverable</p>
+              <h2>Client Report Generator</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="copyClientReport">Copy Report</button>
+              <button class="ghost-button" id="saveClientReport">Save Report</button>
+              <button class="ghost-button" id="pushReportToSheets">Push Report</button>
+            </div>
+          </div>
+
+          <div class="generator-grid">
+            <form class="surface form-stack" id="reportForm">
+              <h3>Report setup</h3>
+              <label>
+                Source
+                <select id="reportSource">
+                  <option>Latest saved case</option>
+                  <option>Current Audit Brain</option>
+                  <option>Current Client Desk</option>
+                  <option>Current Form Intake</option>
+                </select>
+              </label>
+              <label>
+                Recommended package
+                <select id="reportPackage">
+                  <option>Auto</option>
+                  <option>Free Business Audit</option>
+                  <option>Facebook Page Setup</option>
+                  <option>Content Planning</option>
+                  <option>Google Sheets CRM</option>
+                  <option>n8n Automation</option>
+                  <option>Website / Landing Page</option>
+                  <option>Technical Support</option>
+                  <option>Monthly Business Support</option>
+                </select>
+              </label>
+              <label>
+                Timeline
+                <input id="reportTimeline" value="3-7 working days depending on scope" />
+              </label>
+              <label>
+                Price placeholder
+                <input id="reportPrice" value="To be confirmed after scope" />
+              </label>
+              <button type="submit" class="primary-button">Generate Report</button>
+            </form>
+            <article class="surface output-panel">
+              <h3>Client report</h3>
+              <pre id="clientReportOutput"></pre>
+            </article>
           </div>
         </section>
 

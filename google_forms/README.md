@@ -22,6 +22,21 @@ Later:
 - Or connect the response Sheet to n8n.
 - Then let KYAN Brain and Google Sheets share the same client case data.
 
+## Google Sheets Sync Webhook
+
+Use `kyan_sheets_webhook.gs` as a simple Apps Script web app.
+
+1. Create a Google Sheet for KYAN Brain.
+2. Open Extensions > Apps Script.
+3. Paste `kyan_sheets_webhook.gs`.
+4. Deploy as Web App.
+5. Access: Anyone with the link.
+6. Copy the Web App URL.
+7. In Cloudflare, set `SHEETS_WEBHOOK_URL` to that URL.
+8. In KYAN Brain Settings, add the Google Sheet ID.
+
+Then buttons like **Push Case**, **Push Audit**, and **Push Report** can append data to Google Sheets through `/api/sheets`.
+
 ## Form Purpose
 
 The form collects:

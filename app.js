@@ -1659,6 +1659,124 @@ function latestCasePayload() {
   return buildClientPlan();
 }
 
+function getReports() {
+  try {
+    return JSON.parse(localStorage.getItem("kyan_reports") || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+function setReports(reports) {
+  localStorage.setItem("kyan_reports", JSON.stringify(reports));
+}
+
+function currentReportSource() {
+  const source = $("#reportSource").value;
+  if (source === "Current Audit Brain") return determineAuditPath();
+  if (source === "Current Client Desk") return buildClientPlan();
+  if (source === "Current Form Intake") {
+    const parsed = parseFormResponse($("#formResponseInput").value);
+    return buildPathFromFormResponse(parsed).caseData;
+  }
+  return latestCasePayload();
+}
+
+function packageDetails(packageName) {
+  const key = packageName === "Auto" ? "" : packageName;
+  const service = serviceKnowledge[key] || serviceKnowledge["Free Business Audit"];
+  return {
+    name: key || "Recommended KYAN Package",
+    goal: service.goal,
+    deliverables: service.deliverables || ["Audit report", "Top 5 fixes", "Recommended next step"],
+    tasks: service.tasks || ["Review current setup", "Diagnose bottleneck", "Recommend next step"],
+    upsell: service.upsell || "Next logical service"
+  };
+}
+
+function topFixesFromCase(caseData) {
+  const text = `${caseData.plan || ""}\n${caseData.request || ""}`.toLowerCase();
+  const fixes = [];
+  if (text.includes("clarity") || text.includes("page") || text.includes("facebook")) fixes.push("Clarify the offer, bio/About, pinned post, and CTA.");
+  if (text.includes("trust")) fixes.push("Add trust signals: real photos, reviews, proof, FAQs, and business details.");
+  if (text.includes("content")) fixes.push("Create 4-6 content pillars and stop random posting.");
+  if (text.includes("follow") || text.includes("crm") || text.includes("lead")) fixes.push("Track every lead with status and next follow-up date.");
+  if (text.includes("order") || text.includes("payment")) fixes.push("Separate orders/payments from chat and track them in a sheet.");
+  if (text.includes("website") || text.includes("landing")) fixes.push("Make the website/landing page explain the offer and show one clear CTA.");
+  if (text.includes("automation") || text.includes("n8n")) fixes.push("Automate only after the workflow and data fields are clear.");
+  if (!fixes.length) fixes.push("Start with a focused audit and fix the largest bottleneck first.");
+  return fixes.slice(0, 5);
+}
+
+function generateClientReport(event) {
+  if (event) event.preventDefault();
+  const caseData = currentReportSource();
+  const packageName = $("#reportPackage").value === "Auto" ? caseData.primary || "Free Business Audit" : $("#reportPackage").value;
+  const details = packageDetails(packageName);
+  const fixes = topFixesFromCase(caseData);
+  const timeline = $("#reportTimeline").value.trim();
+  const price = $("#reportPrice").value.trim();
+
+  const report = `KYAN CLIENT AUDIT REPORT
+Client: ${caseData.name || "Client"}
+Business type: ${caseData.type || "Unknown"}
+Date: ${new Date().toLocaleDateString()}
+
+1. Main Situation
+${caseData.request || "Client requested a business audit."}
+
+2. Main Problem
+The current setup needs clearer organization around offer clarity, customer journey, and follow-up. The biggest issue should be fixed before scaling content, ads, or automation.
+
+3. Top 5 Fixes
+${fixes.map((fix, index) => `${index + 1}. ${fix}`).join("\n")}
+
+4. Recommended KYAN Package
+${packageName}
+
+Goal:
+${details.goal}
+
+Deliverables:
+${details.deliverables.map((item) => `- ${item}`).join("\n")}
+
+5. Delivery Plan
+${details.tasks.map((task, index) => `${index + 1}. ${task}`).join("\n")}
+
+6. Timeline
+${timeline}
+
+7. Price
+${price}
+
+8. Next Step
+Confirm the scope, send required links/access/materials, then KYAN starts with the first checklist.
+
+Safety Line:
+We improve the system, clarity, follow-up, and customer journey to increase the chance of better results. We do not promise guaranteed sales, viral content, first-page rankings, or instant growth.
+
+KYAN - من اللخبطة للنظام، ومن النظام للنمو.`;
+
+  $("#clientReportOutput").textContent = report;
+  return {
+    report_id: uid("report"),
+    created_at: new Date().toISOString(),
+    client_name: caseData.name || "Client",
+    package: packageName,
+    source_case: caseData,
+    report
+  };
+}
+
+function saveClientReport() {
+  const current = generateClientReport();
+  const reports = getReports();
+  reports.unshift(current);
+  setReports(reports.slice(0, 50));
+  showToast("Report saved");
+  return current;
+}
+
 function currentAuditPayload() {
   return determineAuditPath();
 }
@@ -1748,6 +1866,7 @@ function exportBackupFile() {
     exported_at: new Date().toISOString(),
     settings: getSettings(),
     cases: getCases(),
+    reports: getReports(),
     ops: normalizedOps(),
     brain,
     audit_scorecard: auditScorecard,
@@ -1791,6 +1910,7 @@ $("#auditBrainForm").addEventListener("submit", (event) => {
 
 $("#formResponseForm").addEventListener("submit", parseFormResponseToPath);
 $("#auditPlaybookForm").addEventListener("submit", buildAuditPlaybook);
+$("#reportForm").addEventListener("submit", generateClientReport);
 $("#clientForm").addEventListener("submit", (event) => {
   event.preventDefault();
   buildClientPlan();
@@ -1826,6 +1946,9 @@ $("#copyFormQuestions").addEventListener("click", () => copyText(formQuestionsTe
 $("#copyFormSchema").addEventListener("click", () => copyText(JSON.stringify(googleAuditForm, null, 2)));
 $("#copyAuditChecklist").addEventListener("click", () => copyText($("#auditPlaybookOutput").textContent));
 $("#copyAuditTools").addEventListener("click", () => copyText(auditToolsText()));
+$("#copyClientReport").addEventListener("click", () => copyText($("#clientReportOutput").textContent));
+$("#saveClientReport").addEventListener("click", saveClientReport);
+$("#pushReportToSheets").addEventListener("click", () => pushToSheets("Client_Reports", saveClientReport()));
 $("#copyClientPlan").addEventListener("click", () => copyText(`${$("#clientPlanOutput").textContent}\n\nCLIENT REPLY\n${$("#clientReplyOutput").textContent}`));
 $("#copyRouter").addEventListener("click", () => copyText($("#routerOutput").textContent));
 $("#copySystemPlan").addEventListener("click", () => copyText($("#systemOutput").textContent));
@@ -1872,5 +1995,6 @@ routeRequest();
 buildSystemPlan();
 renderTemplate();
 buildAuditPlaybook();
+generateClientReport();
 loadSettings();
 renderOps();
