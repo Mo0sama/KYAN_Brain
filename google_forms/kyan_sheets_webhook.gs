@@ -1,4 +1,4 @@
-const KYAN_ALLOWED_TABS = [
+var KYAN_ALLOWED_TABS = [
   'Client_Cases',
   'Client_Reports',
   'Daily_Ops',
@@ -10,22 +10,32 @@ const KYAN_ALLOWED_TABS = [
   'Learning_Log'
 ];
 
+function doGet() {
+  return jsonResponse({
+    ok: true,
+    service: 'KYAN Sheets Webhook',
+    actions: ['create', 'list'],
+    allowed_tabs: KYAN_ALLOWED_TABS,
+    time: new Date().toISOString()
+  });
+}
+
 function doPost(e) {
   try {
-    const body = JSON.parse(e.postData.contents || '{}');
-    const sheetId = extractSheetId(body.sheet_id || body.sheet_url);
-    const tab = body.tab;
-    const payload = body.payload || {};
-    const action = body.action || 'create';
+    var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    var sheetId = extractSheetId(body.sheet_id || body.sheet_url);
+    var tab = body.tab;
+    var payload = body.payload || {};
+    var action = body.action || 'create';
 
-    if (!sheetId) return jsonResponse({ ok: false, error: 'Missing sheet_id' }, 400);
-    if (!tab) return jsonResponse({ ok: false, error: 'Missing tab' }, 400);
+    if (!sheetId) return jsonResponse({ ok: false, error: 'Missing sheet_id' });
+    if (!tab) return jsonResponse({ ok: false, error: 'Missing tab' });
     if (KYAN_ALLOWED_TABS.indexOf(tab) === -1) {
-      return jsonResponse({ ok: false, error: 'Tab not allowed: ' + tab }, 400);
+      return jsonResponse({ ok: false, error: 'Tab not allowed: ' + tab });
     }
 
-    const spreadsheet = SpreadsheetApp.openById(sheetId);
-    const sheet = getOrCreateSheet(spreadsheet, tab);
+    var spreadsheet = SpreadsheetApp.openById(sheetId);
+    var sheet = getOrCreateSheet(spreadsheet, tab);
 
     if (action === 'list') {
       return jsonResponse({
@@ -36,7 +46,7 @@ function doPost(e) {
       });
     }
 
-    const flat = flattenObject(payload);
+    var flat = flattenObject(payload);
     appendObject(sheet, flat);
 
     return jsonResponse({
@@ -46,26 +56,30 @@ function doPost(e) {
       time: new Date().toISOString()
     });
   } catch (error) {
-    return jsonResponse({ ok: false, error: error.message }, 500);
+    return jsonResponse({ ok: false, error: error.message });
   }
 }
 
 function readRows(sheet, limit) {
-  const lastRow = sheet.getLastRow();
-  const lastColumn = sheet.getLastColumn();
+  var lastRow = sheet.getLastRow();
+  var lastColumn = sheet.getLastColumn();
   if (lastRow < 2 || lastColumn < 1) return [];
 
-  const headers = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
-  const count = Math.min(Math.max(limit || 25, 1), lastRow - 1);
-  const start = Math.max(2, lastRow - count + 1);
-  const values = sheet.getRange(start, 1, count, lastColumn).getValues();
-  return values.reverse().map(function(row) {
+  var headers = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+  var count = Math.min(Math.max(limit || 25, 1), lastRow - 1);
+  var start = Math.max(2, lastRow - count + 1);
+  var values = sheet.getRange(start, 1, count, lastColumn).getValues();
+  var rows = [];
+
+  for (var i = values.length - 1; i >= 0; i--) {
     var item = {};
-    headers.forEach(function(header, index) {
-      if (header) item[header] = row[index];
-    });
-    return item;
-  });
+    for (var j = 0; j < headers.length; j++) {
+      if (headers[j]) item[headers[j]] = values[i][j];
+    }
+    rows.push(item);
+  }
+
+  return rows;
 }
 
 function getOrCreateSheet(spreadsheet, tab) {
@@ -73,27 +87,29 @@ function getOrCreateSheet(spreadsheet, tab) {
 }
 
 function extractSheetId(value) {
-  const text = String(value || '').trim();
-  const match = text.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  var text = String(value || '').trim();
+  var match = text.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   if (match) return match[1];
   return text;
 }
 
 function appendObject(sheet, object) {
-  const existingLastColumn = Math.max(sheet.getLastColumn(), 1);
-  const existingHeaders = sheet.getLastRow() > 0
-    ? sheet.getRange(1, 1, 1, existingLastColumn).getValues()[0].filter(String)
-    : [];
-  const headers = Array.from(new Set(['received_at'].concat(existingHeaders).concat(Object.keys(object))));
+  var existingLastColumn = Math.max(sheet.getLastColumn(), 1);
+  var existingHeaders = [];
+  if (sheet.getLastRow() > 0) {
+    existingHeaders = sheet.getRange(1, 1, 1, existingLastColumn).getValues()[0].filter(String);
+  }
 
+  var headers = uniqueList(['received_at'].concat(existingHeaders).concat(Object.keys(object)));
   if (sheet.getLastRow() === 0 || headers.length !== existingHeaders.length) {
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   }
 
-  const row = headers.map((header) => {
-    if (header === 'received_at') return new Date();
-    return object[header] === undefined ? '' : object[header];
-  });
+  var row = [];
+  for (var i = 0; i < headers.length; i++) {
+    var header = headers[i];
+    row.push(header === 'received_at' ? new Date() : object[header] === undefined ? '' : object[header]);
+  }
   sheet.appendRow(row);
 }
 
@@ -107,13 +123,15 @@ function flattenObject(value, prefix, output) {
   }
 
   if (Array.isArray(value)) {
-    output[prefix || 'items'] = value.map((item) => typeof item === 'object' ? JSON.stringify(item) : item).join(' | ');
+    output[prefix || 'items'] = value.map(function(item) {
+      return typeof item === 'object' ? JSON.stringify(item) : item;
+    }).join(' | ');
     return output;
   }
 
   if (typeof value === 'object') {
-    Object.keys(value).forEach((key) => {
-      const next = prefix ? prefix + '.' + key : key;
+    Object.keys(value).forEach(function(key) {
+      var next = prefix ? prefix + '.' + key : key;
       flattenObject(value[key], next, output);
     });
     return output;
@@ -123,7 +141,20 @@ function flattenObject(value, prefix, output) {
   return output;
 }
 
-function jsonResponse(data, status) {
+function uniqueList(items) {
+  var seen = {};
+  var result = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    if (item && !seen[item]) {
+      seen[item] = true;
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+function jsonResponse(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
