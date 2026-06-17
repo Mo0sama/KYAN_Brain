@@ -5,6 +5,7 @@ This is a static browser dashboard built from `KYAN_Master_Plan.md`.
 Open `index.html` in a browser to use:
 
 - Brand Brain source of truth
+- Daily Ops for tasks, lead pipeline, and content queue
 - Client Desk for diagnosing client requests
 - Audit Brain for scoring a client and choosing the service path
 - Request Router for turning messy messages into service paths
@@ -24,11 +25,12 @@ Portable assets:
 
 Suggested workflow:
 
-1. Paste the client request into Client Desk.
-2. Generate the diagnosis, service path, task list, and client reply.
-3. Save the case locally in the dashboard.
-4. Use Systems Builder for the actual delivery blueprint.
-5. Use Templates for proposals, requirements forms, reports, and handover.
-6. Use Settings / API after deployment to connect AI, Sheets, and n8n.
+1. Open Daily Ops every morning.
+2. Add tasks, active leads, and content ideas.
+3. Paste client requests into Client Desk or Audit Brain.
+4. Save the case locally in the dashboard.
+5. Use Systems Builder for the actual delivery blueprint.
+6. Use Templates for proposals, requirements forms, reports, and handover.
+7. Use Settings / API after deployment to connect AI, Sheets, and n8n.
 
 No setup, server, or internet connection is required.

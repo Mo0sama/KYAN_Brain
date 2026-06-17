@@ -55,6 +55,17 @@ Never paste API keys into the browser Settings screen.
 
 This repo includes `worker.js` plus `[assets]` in `wrangler.toml`, so Workers deploy mode can serve both the app files and `/api/*`.
 
+## Daily Use Recommendation
+
+Use Daily Ops as the morning workspace:
+
+1. Add today tasks.
+2. Add new leads from WhatsApp/Facebook.
+3. Add content ideas from real client problems.
+4. Use Audit Brain to decide each client path.
+5. Use Client Desk for replies and delivery tasks.
+6. Export backup weekly until Sheets sync is connected.
+
 ## Sheets Sync
 
 The included `/api/sheets` function is a safe proxy.

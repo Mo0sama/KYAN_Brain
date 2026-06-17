@@ -19,6 +19,7 @@
 
         <nav class="nav-list">
           <button class="nav-item active" data-section="command">Command</button>
+          <button class="nav-item" data-section="dailyOps">Daily Ops</button>
           <button class="nav-item" data-section="auditBrain">Audit Brain</button>
           <button class="nav-item" data-section="client">Client Desk</button>
           <button class="nav-item" data-section="router">Request Router</button>
@@ -90,6 +91,143 @@
             </div>
             <div id="caseList" class="case-list"></div>
           </div>
+        </section>
+
+        <section id="dailyOps" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Daily workspace</p>
+              <h2>KYAN Daily Ops</h2>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="copyDailySnapshot">Copy Snapshot</button>
+              <button class="ghost-button" id="exportOps">Export Ops</button>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric-card">
+              <span>Open tasks</span>
+              <strong id="opsOpenTasks">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Active leads</span>
+              <strong id="opsActiveLeads">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Content queue</span>
+              <strong id="opsContentCount">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Today focus</span>
+              <strong id="opsTodayFocus">Audit</strong>
+            </article>
+          </div>
+
+          <div class="ops-grid">
+            <form class="surface form-stack" id="opsTaskForm">
+              <h3>Add task</h3>
+              <label>
+                Task
+                <input id="opsTaskTitle" value="Follow up with new audit lead" />
+              </label>
+              <label>
+                Area
+                <select id="opsTaskArea">
+                  <option>Audit</option>
+                  <option>Client Delivery</option>
+                  <option>Content</option>
+                  <option>CRM</option>
+                  <option>Automation</option>
+                  <option>Website</option>
+                  <option>Support</option>
+                </select>
+              </label>
+              <label>
+                Priority
+                <select id="opsTaskPriority">
+                  <option>High</option>
+                  <option>Medium</option>
+                  <option>Low</option>
+                </select>
+              </label>
+              <button type="submit" class="primary-button">Add Task</button>
+            </form>
+
+            <form class="surface form-stack" id="opsLeadForm">
+              <h3>Add lead</h3>
+              <label>
+                Client
+                <input id="opsLeadName" value="New Lead" />
+              </label>
+              <label>
+                Need
+                <input id="opsLeadNeed" value="Page audit and follow-up system" />
+              </label>
+              <label>
+                Stage
+                <select id="opsLeadStage">
+                  <option>New</option>
+                  <option>Audit Sent</option>
+                  <option>Proposal</option>
+                  <option>Won</option>
+                  <option>Lost</option>
+                </select>
+              </label>
+              <button type="submit" class="primary-button">Add Lead</button>
+            </form>
+
+            <form class="surface form-stack" id="opsContentForm">
+              <h3>Add content idea</h3>
+              <label>
+                Idea
+                <input id="opsContentIdea" value="Why WhatsApp alone loses customers" />
+              </label>
+              <label>
+                Pillar
+                <select id="opsContentPillar"></select>
+              </label>
+              <label>
+                Format
+                <select id="opsContentFormat">
+                  <option>Facebook Post</option>
+                  <option>Reel</option>
+                  <option>Carousel</option>
+                  <option>Story</option>
+                </select>
+              </label>
+              <button type="submit" class="primary-button">Add Idea</button>
+            </form>
+          </div>
+
+          <div class="ops-board">
+            <article class="surface">
+              <div class="surface-head">
+                <h3>Tasks</h3>
+                <button class="ghost-button danger" id="clearDoneTasks">Clear Done</button>
+              </div>
+              <div id="opsTaskList" class="ops-list"></div>
+            </article>
+            <article class="surface">
+              <div class="surface-head">
+                <h3>Lead pipeline</h3>
+                <button class="ghost-button" id="copyLeadReply">Copy Next Reply</button>
+              </div>
+              <div id="opsLeadList" class="ops-list"></div>
+            </article>
+            <article class="surface">
+              <div class="surface-head">
+                <h3>Content queue</h3>
+                <button class="ghost-button" id="sendIdeaToContent">Send First to Content</button>
+              </div>
+              <div id="opsContentList" class="ops-list"></div>
+            </article>
+          </div>
+
+          <article class="surface output-panel">
+            <h3>Daily operating snapshot</h3>
+            <pre id="dailySnapshotOutput"></pre>
+          </article>
         </section>
 
         <section id="auditBrain" class="panel">

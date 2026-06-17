@@ -367,6 +367,80 @@ select[multiple] {
   align-items: center;
 }
 
+.surface-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.surface-head h3 {
+  margin-bottom: 0;
+}
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.ops-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.ops-list {
+  display: grid;
+  gap: 10px;
+}
+
+.ops-item {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfefe;
+}
+
+.ops-item.done {
+  opacity: 0.62;
+}
+
+.ops-item-title {
+  color: var(--charcoal);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.ops-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ops-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mini-button {
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--charcoal);
+  background: var(--white);
+  cursor: pointer;
+  font-weight: 800;
+}
+
 .case-list {
   display: grid;
   gap: 10px;
@@ -493,7 +567,9 @@ select[multiple] {
   .app-shell,
   .two-column,
   .generator-grid,
-  .client-grid {
+  .client-grid,
+  .ops-grid,
+  .ops-board {
     grid-template-columns: 1fr;
   }
 

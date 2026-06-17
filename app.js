@@ -422,6 +422,7 @@ function renderOptions() {
   $("#pillarSelect").innerHTML = pillars.map((pillar) => `<option>${pillar.name}</option>`).join("");
   $("#audienceSelect").innerHTML = brain.audience.map((audience) => `<option>${audience}</option>`).join("");
   $("#templateSelect").innerHTML = Object.keys(templates).map((name) => `<option>${name}</option>`).join("");
+  $("#opsContentPillar").innerHTML = pillars.map((pillar) => `<option>${pillar.name}</option>`).join("");
 }
 
 function renderStaticSections() {
@@ -951,6 +952,241 @@ function renderCaseList() {
   });
 }
 
+function uid(prefix) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;
+}
+
+function getOps() {
+  try {
+    return JSON.parse(localStorage.getItem("kyan_ops") || "{}");
+  } catch (error) {
+    return {};
+  }
+}
+
+function setOps(ops) {
+  localStorage.setItem("kyan_ops", JSON.stringify(ops));
+}
+
+function normalizedOps() {
+  const ops = getOps();
+  return {
+    tasks: Array.isArray(ops.tasks) ? ops.tasks : [],
+    leads: Array.isArray(ops.leads) ? ops.leads : [],
+    content: Array.isArray(ops.content) ? ops.content : []
+  };
+}
+
+function saveOpsSection(key, items) {
+  const ops = normalizedOps();
+  ops[key] = items;
+  setOps(ops);
+  renderOps();
+}
+
+function priorityRank(priority) {
+  return { High: 0, Medium: 1, Low: 2 }[priority] ?? 3;
+}
+
+function renderOps() {
+  const ops = normalizedOps();
+  const openTasks = ops.tasks.filter((task) => !task.done);
+  const activeLeads = ops.leads.filter((lead) => !["Won", "Lost"].includes(lead.stage));
+
+  $("#opsOpenTasks").textContent = openTasks.length;
+  $("#opsActiveLeads").textContent = activeLeads.length;
+  $("#opsContentCount").textContent = ops.content.length;
+  $("#opsTodayFocus").textContent = openTasks.sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority))[0]?.area || "Audit";
+
+  $("#opsTaskList").innerHTML = ops.tasks.length ? ops.tasks
+    .sort((a, b) => Number(a.done) - Number(b.done) || priorityRank(a.priority) - priorityRank(b.priority))
+    .map((task) => `<div class="ops-item ${task.done ? "done" : ""}">
+      <div class="ops-item-title">${task.title}</div>
+      <div class="ops-meta"><span>${task.area}</span><span>${task.priority}</span><span>${new Date(task.created_at).toLocaleDateString()}</span></div>
+      <div class="ops-actions">
+        <button class="mini-button" data-task-toggle="${task.id}">${task.done ? "Reopen" : "Done"}</button>
+        <button class="mini-button" data-task-delete="${task.id}">Delete</button>
+      </div>
+    </div>`).join("") : `<div class="ops-item"><div class="ops-item-title">No tasks yet.</div><div class="ops-meta">Add today’s first action.</div></div>`;
+
+  $("#opsLeadList").innerHTML = ops.leads.length ? ops.leads.map((lead) => `<div class="ops-item">
+    <div class="ops-item-title">${lead.name}</div>
+    <div>${lead.need}</div>
+    <div class="ops-meta"><span>${lead.stage}</span><span>${new Date(lead.created_at).toLocaleDateString()}</span></div>
+    <div class="ops-actions">
+      <button class="mini-button" data-lead-advance="${lead.id}">Advance</button>
+      <button class="mini-button" data-lead-delete="${lead.id}">Delete</button>
+    </div>
+  </div>`).join("") : `<div class="ops-item"><div class="ops-item-title">No leads yet.</div><div class="ops-meta">Add a lead after the first message or audit.</div></div>`;
+
+  $("#opsContentList").innerHTML = ops.content.length ? ops.content.map((idea) => `<div class="ops-item">
+    <div class="ops-item-title">${idea.idea}</div>
+    <div class="ops-meta"><span>${idea.pillar}</span><span>${idea.format}</span><span>${idea.status}</span></div>
+    <div class="ops-actions">
+      <button class="mini-button" data-content-mark="${idea.id}">${idea.status === "Drafted" ? "Reset" : "Drafted"}</button>
+      <button class="mini-button" data-content-delete="${idea.id}">Delete</button>
+    </div>
+  </div>`).join("") : `<div class="ops-item"><div class="ops-item-title">No content ideas yet.</div><div class="ops-meta">Queue ideas from client problems and audits.</div></div>`;
+
+  bindOpsButtons();
+  renderDailySnapshot();
+}
+
+function bindOpsButtons() {
+  $$("[data-task-toggle]").forEach((button) => button.addEventListener("click", () => {
+    const ops = normalizedOps();
+    ops.tasks = ops.tasks.map((task) => task.id === button.dataset.taskToggle ? { ...task, done: !task.done } : task);
+    setOps(ops);
+    renderOps();
+  }));
+  $$("[data-task-delete]").forEach((button) => button.addEventListener("click", () => {
+    const ops = normalizedOps();
+    ops.tasks = ops.tasks.filter((task) => task.id !== button.dataset.taskDelete);
+    setOps(ops);
+    renderOps();
+  }));
+  $$("[data-lead-advance]").forEach((button) => button.addEventListener("click", () => {
+    const stages = ["New", "Audit Sent", "Proposal", "Won", "Lost"];
+    const ops = normalizedOps();
+    ops.leads = ops.leads.map((lead) => {
+      if (lead.id !== button.dataset.leadAdvance) return lead;
+      const next = stages[Math.min(stages.indexOf(lead.stage) + 1, stages.length - 1)] || "Audit Sent";
+      return { ...lead, stage: next };
+    });
+    setOps(ops);
+    renderOps();
+  }));
+  $$("[data-lead-delete]").forEach((button) => button.addEventListener("click", () => {
+    const ops = normalizedOps();
+    ops.leads = ops.leads.filter((lead) => lead.id !== button.dataset.leadDelete);
+    setOps(ops);
+    renderOps();
+  }));
+  $$("[data-content-mark]").forEach((button) => button.addEventListener("click", () => {
+    const ops = normalizedOps();
+    ops.content = ops.content.map((idea) => idea.id === button.dataset.contentMark ? { ...idea, status: idea.status === "Drafted" ? "Idea" : "Drafted" } : idea);
+    setOps(ops);
+    renderOps();
+  }));
+  $$("[data-content-delete]").forEach((button) => button.addEventListener("click", () => {
+    const ops = normalizedOps();
+    ops.content = ops.content.filter((idea) => idea.id !== button.dataset.contentDelete);
+    setOps(ops);
+    renderOps();
+  }));
+}
+
+function addOpsTask(event) {
+  event.preventDefault();
+  const ops = normalizedOps();
+  ops.tasks.unshift({
+    id: uid("task"),
+    title: $("#opsTaskTitle").value.trim() || "Untitled task",
+    area: $("#opsTaskArea").value,
+    priority: $("#opsTaskPriority").value,
+    done: false,
+    created_at: new Date().toISOString()
+  });
+  setOps(ops);
+  renderOps();
+}
+
+function addOpsLead(event) {
+  event.preventDefault();
+  const ops = normalizedOps();
+  ops.leads.unshift({
+    id: uid("lead"),
+    name: $("#opsLeadName").value.trim() || "New Lead",
+    need: $("#opsLeadNeed").value.trim() || "Needs audit",
+    stage: $("#opsLeadStage").value,
+    created_at: new Date().toISOString()
+  });
+  setOps(ops);
+  renderOps();
+}
+
+function addOpsContent(event) {
+  event.preventDefault();
+  const ops = normalizedOps();
+  ops.content.unshift({
+    id: uid("content"),
+    idea: $("#opsContentIdea").value.trim() || "Untitled idea",
+    pillar: $("#opsContentPillar").value,
+    format: $("#opsContentFormat").value,
+    status: "Idea",
+    created_at: new Date().toISOString()
+  });
+  setOps(ops);
+  renderOps();
+}
+
+function renderDailySnapshot() {
+  const ops = normalizedOps();
+  const openTasks = ops.tasks.filter((task) => !task.done);
+  const activeLeads = ops.leads.filter((lead) => !["Won", "Lost"].includes(lead.stage));
+  const nextTasks = openTasks
+    .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority))
+    .slice(0, 5)
+    .map((task, index) => `${index + 1}. [${task.priority}] ${task.title} (${task.area})`)
+    .join("\n") || "No open tasks.";
+  const leads = activeLeads.slice(0, 5).map((lead) => `- ${lead.name}: ${lead.need} (${lead.stage})`).join("\n") || "No active leads.";
+  const content = ops.content.slice(0, 5).map((idea) => `- ${idea.idea} | ${idea.pillar} | ${idea.format} | ${idea.status}`).join("\n") || "No queued content.";
+
+  $("#dailySnapshotOutput").textContent = `KYAN DAILY SNAPSHOT
+Date: ${new Date().toLocaleDateString()}
+
+TOP TASKS
+${nextTasks}
+
+ACTIVE LEADS
+${leads}
+
+CONTENT QUEUE
+${content}
+
+OPERATING RULE
+Start with the highest-leverage bottleneck. System first. Automation second.`;
+}
+
+function copyLeadReply() {
+  const lead = normalizedOps().leads.find((item) => !["Won", "Lost"].includes(item.stage));
+  const text = lead ? `تمام يا ${lead.name}.
+
+خليني أبدأ بتحليل سريع للوضع الحالي عشان نحدد أفضل خطوة بدل ما نشتغل عشوائي.
+واضح إن الاحتياج الأساسي: ${lead.need}.
+
+ابعتلي اللينك أو التفاصيل المتاحة، وهنطلعلك أهم 5 حاجات محتاجة تتظبط والخطوة المناسبة.
+
+KYAN - من اللخبطة للنظام، ومن النظام للنمو.` : "No active lead to reply to.";
+  copyText(text);
+}
+
+function sendFirstIdeaToContent() {
+  const idea = normalizedOps().content[0];
+  if (!idea) {
+    showToast("No content idea queued");
+    return;
+  }
+  $("#pillarSelect").value = idea.pillar;
+  $("#formatSelect").value = idea.format === "Reel" ? "Reel Script" : idea.format;
+  $("#painInput").value = idea.idea;
+  generateDraft();
+  $$(".nav-item").find((item) => item.dataset.section === "content")?.click();
+}
+
+function exportOpsFile() {
+  const blob = new Blob([JSON.stringify({ exported_at: new Date().toISOString(), ops: normalizedOps() }, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `kyan-daily-ops-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast("Ops exported");
+}
+
 function defaultSettings() {
   return {
     apiProvider: "openai",
@@ -1115,6 +1351,7 @@ function exportBackupFile() {
     exported_at: new Date().toISOString(),
     settings: getSettings(),
     cases: getCases(),
+    ops: normalizedOps(),
     brain,
     audit_scorecard: auditScorecard,
     service_knowledge: serviceKnowledge
@@ -1177,6 +1414,9 @@ $("#settingsForm").addEventListener("submit", (event) => {
   showToast("Settings saved");
 });
 
+$("#opsTaskForm").addEventListener("submit", addOpsTask);
+$("#opsLeadForm").addEventListener("submit", addOpsLead);
+$("#opsContentForm").addEventListener("submit", addOpsContent);
 $("#aiAgentForm").addEventListener("submit", runAiAgent);
 $("#templateSelect").addEventListener("change", renderTemplate);
 $("#copyBrain").addEventListener("click", () => copyText(templates["AI Agent System Prompt"]));
@@ -1195,6 +1435,16 @@ $("#testApi").addEventListener("click", testApiConnection);
 $("#pushAuditToSheets").addEventListener("click", () => pushToSheets("Client_Cases", currentAuditPayload()));
 $("#pushCaseToSheets").addEventListener("click", () => pushToSheets("Client_Cases", latestCasePayload()));
 $("#exportBackup").addEventListener("click", exportBackupFile);
+$("#copyDailySnapshot").addEventListener("click", () => copyText($("#dailySnapshotOutput").textContent));
+$("#exportOps").addEventListener("click", exportOpsFile);
+$("#copyLeadReply").addEventListener("click", copyLeadReply);
+$("#sendIdeaToContent").addEventListener("click", sendFirstIdeaToContent);
+$("#clearDoneTasks").addEventListener("click", () => {
+  const ops = normalizedOps();
+  ops.tasks = ops.tasks.filter((task) => !task.done);
+  setOps(ops);
+  renderOps();
+});
 $("#saveAuditCase").addEventListener("click", saveCurrentAuditCase);
 $("#saveCase").addEventListener("click", saveCurrentCase);
 $("#loadLastCase").addEventListener("click", () => {
@@ -1219,3 +1469,4 @@ routeRequest();
 buildSystemPlan();
 renderTemplate();
 loadSettings();
+renderOps();
